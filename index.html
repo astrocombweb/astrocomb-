@@ -543,17 +543,20 @@ const usedTopicImages = new Set();
 let topicImagesStarted = false;
 
 async function findNasaImage(query, excluded = new Set()) {
-  try {
-    const response = await fetch("https://images-api.nasa.gov/search?q=" + encodeURIComponent(query) + "&media_type=image");
-    if (!response.ok) return null;
-    const data = await response.json();
-    const items = data.collection && data.collection.items ? data.collection.items : [];
-    for (const item of items) {
-      const href = item.links && item.links.find(link => link.render === "image")?.href;
-      if (href && !excluded.has(href) && /images\.nasa\.gov/.test(href)) return href;
+  const queries = [query, query.split(/[&]/)[0], query + " NASA mission"];
+  for (const searchTerm of queries) {
+    try {
+      const response = await fetch("https://images-api.nasa.gov/search?q=" + encodeURIComponent(searchTerm) + "&media_type=image&page_size=60");
+      if (!response.ok) continue;
+      const data = await response.json();
+      const items = data.collection && data.collection.items ? data.collection.items : [];
+      for (const item of items) {
+        const href = item.links && item.links.find(link => link.render === "image")?.href;
+        if (href && !excluded.has(href) && /images\.nasa\.gov/.test(href)) return href;
+      }
+    } catch (error) {
+      console.warn("NASA image search unavailable for:", searchTerm);
     }
-  } catch (error) {
-    console.warn("NASA image search unavailable for:", query);
   }
   return null;
 }
@@ -561,24 +564,20 @@ async function findNasaImage(query, excluded = new Set()) {
 async function loadTopicImages() {
   if (topicImagesStarted) return;
   topicImagesStarted = true;
-  const queue = [...topics];
-  const workers = Array.from({length: 5}, async () => {
-    while (queue.length) {
-      const topic = queue.shift();
-      const imageUrl = await findNasaImage(topic.en, usedTopicImages);
-      if (!imageUrl) continue;
-      usedTopicImages.add(imageUrl);
-      topicImageCache.set(topic.id, imageUrl);
-      const button = grid.querySelector('[data-topic-id="' + topic.id + '"]');
-      const img = button && button.querySelector("img");
-      if (img) {
-        img.src = imageUrl;
-        img.alt = (language === "el" ? topic.el : topic.en) + " — NASA image";
-        img.dataset.source = "NASA";
-      }
+  // Load sequentially so every tile reserves a unique image before the next one searches.
+  for (const topic of topics) {
+    const imageUrl = await findNasaImage(topic.en, usedTopicImages);
+    if (!imageUrl) continue;
+    usedTopicImages.add(imageUrl);
+    topicImageCache.set(topic.id, imageUrl);
+    const button = grid.querySelector('[data-topic-id="' + topic.id + '"]');
+    const img = button && button.querySelector("img");
+    if (img) {
+      img.src = imageUrl;
+      img.alt = (language === "el" ? topic.el : topic.en) + " — NASA image";
+      img.dataset.source = "NASA";
     }
-  });
-  await Promise.all(workers);
+  }
 }
 
 function loadEmblemSaturn() {
