@@ -385,7 +385,7 @@ footer small { font: 11px Arial, sans-serif; color: var(--muted); }
       <h2 class="side-heading" data-i18n="media">NASA & ESA MEDIA</h2>
       <button class="side-link" data-action="gallery" data-i18n="gallery">Image galleries</button>
       <button class="side-link" data-action="nasa" data-i18n="nasaImages">NASA images</button>
-      <button class="side-link" data-action="esa" data-i18n="esaImages">ESA images</button>
+      <button class="side-link" data-action="esa" data-i18n="esaImages">NASA images</button>
     </section>
     <section class="side-section">
       <h2 class="side-heading" data-i18n="about">ABOUT</h2>
@@ -481,7 +481,7 @@ const translations = {
   en: {
     explore:"EXPLORE", allTopics:"All topics", easy:"Quiz — Easy",
     medium:"Quiz — Medium", hard:"Quiz — Hard", media:"NASA & ESA MEDIA",
-    gallery:"Image galleries", nasaImages:"NASA images", esaImages:"ESA images",
+    gallery:"NASA image gallery", nasaImages:"NASA images", esaImages:"NASA images",
     about:"ABOUT", aboutSite:"About Astrocomb", sources:"Scientific sources",
     tagline:"Everything you need to learn about the universe.",
     heroNote:"Astronomy · Cosmology · Fundamental Physics",
@@ -505,7 +505,7 @@ const translations = {
   el: {
     explore:"ΕΞΕΡΕΥΝΗΣΗ", allTopics:"Όλα τα θέματα", easy:"Κουίζ — Εύκολο",
     medium:"Κουίζ — Μεσαίο", hard:"Κουίζ — Δύσκολο", media:"ΥΛΙΚΟ NASA & ESA",
-    gallery:"Συλλογές εικόνων", nasaImages:"Εικόνες NASA", esaImages:"Εικόνες ESA",
+    gallery:"Συλλογές εικόνων NASA", nasaImages:"Εικόνες NASA", esaImages:"Εικόνες NASA",
     about:"ΣΧΕΤΙΚΑ", aboutSite:"Σχετικά με το Astrocomb", sources:"Επιστημονικές πηγές",
     tagline:"Όλα όσα χρειάζεσαι για να μάθεις για το Σύμπαν.",
     heroNote:"Αστρονομία · Κοσμολογία · Θεμελιώδης Φυσική",
@@ -517,7 +517,7 @@ const translations = {
     aboutText:"Το Astrocomb είναι μια εκπαιδευτική ιδέα για την εξερεύνηση της αστρονομίας, της κοσμολογίας και της θεμελιώδους φυσικής. Κάθε εξάγωνο ανοίγει μια εισαγωγική παρουσίαση και συνδέσμους προς επιστημονικές πηγές. Για ερευνητική χρήση, συμβουλέψου απευθείας τις πρωτογενείς πηγές.",
     sourcesTitle:"Επιστημονικές πηγές",
     sourcesText:"Χρησιμοποίησε τις πρωτογενείς πηγές για επαλήθευση πληροφοριών, τεκμηρίωση αποστολών και επιστημονικές εικόνες.",
-    galleryTitle:"Συλλογές εικόνων NASA & ESA",
+    galleryTitle:"Συλλογή εικόνων NASA",
     nasaTitle:"Βιβλιοθήκη εικόνων και βίντεο NASA",
     esaTitle:"Συλλογή πολυμέσων ESA",
     quizTitle:"Έλεγχος γνώσεων", question:"Ερώτηση",
@@ -980,68 +980,9 @@ let nasaGalleryItems = [];
 let nasaGalleryLoading = false;
 
 
-async function openEsaGallery() {
-  const content = document.createElement("div");
-  const intro = document.createElement("p");
-  intro.textContent = language === "el"
-    ? "Φωτογραφίες από την επίσημη συλλογή εικόνων της ESA. Πάτησε μια εικόνα για μεγέθυνση."
-    : "Photographs from ESA's official image collection. Select an image to enlarge it.";
-  const status = document.createElement("p");
-  status.className = "gallery-status";
-  status.textContent = language === "el" ? "Φόρτωση εικόνων ESA…" : "Loading ESA images…";
-  const grid = document.createElement("div");
-  grid.className = "image-gallery";
-  const more = document.createElement("a");
-  more.className = "primary-button";
-  more.href = "https://www.esa.int/ESA_Multimedia/Images";
-  more.target = "_blank";
-  more.rel = "noopener noreferrer";
-  more.textContent = language === "el" ? "Περισσότερες εικόνες στο ESA ↗" : "More images at ESA ↗";
-  content.append(intro, status, grid, more);
-  openModal(language === "el" ? "Συλλογή εικόνων ESA" : "ESA Image Gallery", content);
-  const sources = [
-    {title:"Euclid’s view of our galaxy’s bulge",page:"https://www.esa.int/ESA_Multimedia/Images/2026/06/Euclid_s_view_of_our_galaxy_s_bulge",img:"https://www.esa.int/var/esa/storage/images/esa_multimedia/images/2026/06/euclid_s_view_of_our_galaxy_s_bulge/27270636-1-eng-GB/Euclid_s_view_of_our_galaxy_s_bulge_pillars.jpg"},
-    {title:"Hubble & Euclid: Cat’s Eye Nebula",page:"https://www.esa.int/ESA_Multimedia/Images/2026/03/Hubble_Euclid_zoom_into_Cat_s_Eye_Nebula",img:"https://www.esa.int/var/esa/storage/images/esa_multimedia/images/2026/03/hubble_euclid_zoom_into_cat_s_eye_nebula/27097077-1-eng-GB/Hubble_Euclid_zoom_into_Cat_s_Eye_Nebula_pillars.jpg"},
-    {title:"Top-down view of the Milky Way",page:"https://www.esa.int/ESA_Multimedia/Images/2023/12/Top-down_view_of_the_Milky_Way",img:"https://www.esa.int/var/esa/storage/images/esa_multimedia/images/2023/12/top-down_view_of_the_milky_way/25373078-1-eng-GB/Top-down_view_of_the_Milky_Way.jpg"},
-    {title:"Flaring windy black hole in NGC 3783",page:"https://www.esa.int/ESA_Multimedia/Images/2025/12/Artist_s_impression_of_the_flaring_windy_black_hole_in_NGC_3783",img:"https://www.esa.int/var/esa/storage/images/esa_multimedia/images/2025/12/artist_s_impression_of_the_flaring_windy_black_hole_in_ngc_3783/27008009-1-eng-GB/Artist_s_impression_of_the_flaring_windy_black_hole_in_NGC_3783_pillars.jpg"},
-    {title:"Thirty years of Hubble Space Telescope",page:"https://www.esa.int/ESA_Multimedia/Images/2020/04/Thirty_years_of_Hubble_Space_Telescope",img:"https://www.esa.int/var/esa/storage/images/esa_multimedia/images/2020/04/thirty_years_of_hubble_space_telescope/21960926-1-eng-GB/Thirty_years_of_Hubble_Space_Telescope_pillars.jpg"}
-  ];
-  const seen = new Set();
-  sources.forEach(item => {
-    if (seen.has(item.img)) return;
-    seen.add(item.img);
-    const card = document.createElement("button");
-    card.className = "gallery-card";
-    card.type = "button";
-    const img = document.createElement("img");
-    img.loading = "lazy";
-    img.src = item.img;
-    img.alt = item.title;
-    img.onerror = () => card.remove();
-    const label = document.createElement("span");
-    label.textContent = item.title;
-    card.append(img,label);
-    card.addEventListener("click", () => {
-      const zoom = document.createElement("div");
-      zoom.className = "gallery-zoom";
-      const large = document.createElement("img");
-      large.src = item.img;
-      large.alt = item.title;
-      const caption = document.createElement("p");
-      caption.textContent = item.title;
-      const source = document.createElement("a");
-      source.href = item.page;
-      source.target = "_blank";
-      source.rel = "noopener noreferrer";
-      source.textContent = language === "el" ? "Πληροφορίες στην ESA ↗" : "View details at ESA ↗";
-      zoom.append(large,caption,source);
-      openModal(item.title,zoom);
-    });
-    grid.appendChild(card);
-  });
-  status.textContent = language === "el"
-    ? "Εμφανίζονται επιλεγμένες εικόνες ESA. Χρησιμοποίησε τον σύνδεσμο για την πλήρη συλλογή."
-    : "Showing selected ESA images. Use the link for the complete collection.";
+function openEsaGallery() {
+  // Keep the gallery NASA-only even when the legacy ESA menu entry is selected.
+  openImageGallery();
 }
 
 async function openImageGallery() {
@@ -1077,10 +1018,13 @@ async function loadNasaGalleryPage(status, grid, more) {
     const data = await response.json();
     const used = new Set(nasaGalleryItems.map(item => item.url));
     const incoming = (data.collection?.items || []).map(item => {
-      const image = (item.links || []).find(link => link.render === "image" && link.href);
+      const image = (item.links || []).find(link => link.render === "image" && /^https:\/\/images-assets\.nasa\.gov\//i.test(link.href || ""));
       const info = (item.data || [])[0] || {};
-      return image ? { url:image.href, title:info.title || "NASA image", description:info.description || "", date:info.date_created || "" } : null;
-    }).filter(item => item && !used.has(item.url));
+      const metadata = ((info.title || "") + " " + (info.description || "") + " " + (info.keywords || []).join(" ")).trim();
+      const allowedSpaceSubject = /\b(galax|planet|mars|jupiter|saturn|venus|mercury|uranus|neptune|earth|exoplanet|black hole|accretion disk|nebula|stellar|star|supernova|pulsar|deep field|cosmic|universe)\b/i.test(metadata);
+      const prohibited = /\b(astronaut|crew member|portrait|selfie|person|people|face|human subject|group photo|family|landscape|mountain|forest|trees|beach|building|cityscape|hiking|camping)\b/i.test(metadata);
+      return image ? { url:image.href, title:info.title || "NASA space image", description:info.description || "", date:info.date_created || "", metadata, allowedSpaceSubject, prohibited } : null;
+    }).filter(item => item && item.allowedSpaceSubject && !item.prohibited && !used.has(item.url));
     nasaGalleryItems.push(...incoming);
     incoming.forEach(item => {
       const card = document.createElement("button");
