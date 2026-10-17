@@ -638,6 +638,7 @@ async function loadTopicImages() {
     const img = button && button.querySelector("img");
     if (img) {
       img.src = candidate.url;
+      img.hidden = false;
       img.alt = (language === "el" ? topic.el : topic.en) + " — NASA image";
       img.dataset.source = "NASA";
     }
@@ -690,7 +691,7 @@ function renderTopics(filter = "") {
     button.dataset.topicId = topic.id;
     button.setAttribute("aria-label", title);
     button.innerHTML = `
-      <img src="${topicImageCache.get(topic.id) || ""}"
+      <img${topicImageCache.has(topic.id) ? ' src="' + topicImageCache.get(topic.id) + '"' : ""}
            alt="${title} — NASA space image" loading="lazy" referrerpolicy="no-referrer">
       <span class="topic-name"></span>
       <span class="topic-category"></span>`;
