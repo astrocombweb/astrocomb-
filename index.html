@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#050914">
+<meta name="description" content="Astrocomb — an academic exploration of the universe, astronomy, cosmology and physics.">
+<title>ASTROCOMB — Explore the Universe</title>
+
+<style>
+:root {
+  --bg: #050914;
+  --panel: rgba(8, 16, 29, .96);
+  --blue: #78b9ff;
+  --blue-soft: rgba(120, 185, 255, .25);
+  --text: #e9eef8;
+  --muted: #a5b2c7;
+  --line: rgba(150, 190, 235, .23);
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  color: var(--text);
+  background: var(--bg);
+  font-family: Georgia, "Times New Roman", serif;
+  min-height: 100vh;
+}
+button, input { font: inherit; }
+button { cursor: pointer; }
+button:focus-visible, input:focus-visible, a:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
+.space-background {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background:
+    linear-gradient(90deg, rgba(3,7,15,.95), rgba(3,7,15,.45) 35%, rgba(3,7,15,.28)),
+    linear-gradient(0deg, rgba(3,7,15,.65), transparent 65%),
+    url("https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&w=2400&q=85")
+    center / cover no-repeat;
+}
+.space-background::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 70% 35%, transparent 5%, #050914aa 100%);
+}
+header {
+  min-height: 86px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(3, 7, 14, .75);
+  backdrop-filter: blur(14px);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.menu-button {
+  border: 0;
+  color: var(--text);
+  background: transparent;
+  font-size: 29px;
+}
+.brand {
+  color: white;
+  text-decoration: none;
+  letter-spacing: .18em;
+  font-size: 23px;
+  white-space: nowrap;
+}
+.brand span { color: var(--blue); }
+.search-wrap { flex: 1; max-width: 540px; margin-left: auto; }
+.search-wrap input {
+  width: 100%;
+  padding: 13px 16px;
+  color: white;
+  background: #0b1322;
+  border: 1px solid #46536a;
+  border-radius: 5px;
+}
+.language-switch { display: flex; gap: 5px; }
+.language-switch button {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  padding: 10px 12px;
+}
+.language-switch button.active {
+  color: white;
+  background: #14233b;
+  border-color: var(--blue);
+}
+.layout { display: flex; align-items: stretch; }
+.sidebar {
+  width: 245px;
+  flex-shrink: 0;
+  padding: 20px 14px;
+  background: rgba(5, 10, 19, .94);
+  border-right: 1px solid var(--line);
+  min-height: calc(100vh - 86px);
+  transition: margin-left .25s ease;
+}
+.sidebar.closed { margin-left: -245px; }
+.side-section { padding: 15px 8px 20px; border-bottom: 1px solid var(--line); }
+.side-heading {
+  font-family: Arial, sans-serif;
+  color: #dce7f7;
+  font-size: 12px;
+  letter-spacing: .15em;
+  margin: 0 0 13px;
+}
+.side-link {
+  width: 100%;
+  display: block;
+  text-align: left;
+  padding: 10px;
+  margin: 3px 0;
+  border: 0;
+  color: var(--muted);
+  background: transparent;
+  border-radius: 4px;
+  font-family: Arial, sans-serif;
+}
+.side-link:hover { background: #14223a; color: white; }
+main { min-width: 0; flex: 1; padding: 32px clamp(14px, 3vw, 44px) 0; }
+.hero { text-align: center; padding: 8px 0 35px; }
+.emblem {
+  width: 94px;
+  height: 76px;
+  margin: 0 auto 12px;
+  position: relative;
+}
+.emblem span {
+  position: absolute;
+  width: 54px;
+  height: 48px;
+  border: 1px solid var(--blue);
+  display: grid;
+  place-items: center;
+  background: #081322b8;
+  clip-path: polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);
+  font-size: 24px;
+}
+.emblem span:nth-child(1) { left: 20px; top: 0; }
+.emblem span:nth-child(2) { left: 0; top: 27px; }
+.emblem span:nth-child(3) { left: 40px; top: 27px; }
+h1 {
+  font-size: clamp(32px, 4vw, 53px);
+  font-weight: normal;
+  letter-spacing: .18em;
+  margin: 0;
+}
+.tagline { color: #c2cede; font-size: 17px; margin: 12px 0; }
+.hero-note {
+  color: var(--muted);
+  font: 11px Arial, sans-serif;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  margin-top: 20px;
+}
+.section-title {
+  font-size: 12px;
+  font-family: Arial, sans-serif;
+  letter-spacing: .2em;
+  color: #b9d8ff;
+  text-transform: uppercase;
+  text-align: center;
+  margin: 5px 0 24px;
+}
+.honeycomb {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(120px, 1fr));
+  gap: 7px 0;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.topic {
+  position: relative;
+  isolation: isolate;
+  aspect-ratio: 1.04 / 1;
+  min-width: 0;
+  padding: 9px;
+  margin: 0 -1px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  text-align: center;
+  color: white;
+  background: transparent;
+  border: 0;
+  clip-path: polygon(25% 1%,75% 1%,99% 50%,75% 99%,25% 99%,1% 50%);
+}
+.topic::before, .topic::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  clip-path: polygon(25% 1%,75% 1%,99% 50%,75% 99%,25% 99%,1% 50%);
+}
+.topic::before { background: var(--blue); }
+.topic::after {
+  inset: 1.5px;
+  z-index: -1;
+  background: #07101dcc;
+}
+.topic:hover::after, .topic:focus-visible::after {
+  background: #10223beF;
+}
+.topic img {
+  width: 62%;
+  height: 48%;
+  object-fit: cover;
+  border-radius: 3px;
+  opacity: .88;
+  filter: saturate(.78);
+  transition: .2s;
+}
+.topic:hover img { opacity: 1; filter: saturate(1.1); }
+.topic-name { font-size: clamp(12px, 1.15vw, 16px); line-height: 1.25; }
+.topic-category {
+  font: 9px Arial, sans-serif;
+  letter-spacing: .12em;
+  color: #9bcaff;
+  text-transform: uppercase;
+}
+.topic[hidden] { display: none; }
+.topic:nth-child(5n + 2), .topic:nth-child(5n + 4) { transform: translateY(22px); }
+.empty { text-align: center; color: var(--muted); padding: 40px; }
+footer {
+  max-width: 850px;
+  text-align: center;
+  border-top: 1px solid var(--line);
+  margin: 80px auto 0;
+  padding: 20px 10px 28px;
+  color: #b7c4d7;
+  line-height: 1.8;
+}
+footer a { color: var(--blue); }
+footer small { font: 11px Arial, sans-serif; color: var(--muted); }
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: #000b;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+}
+.modal-backdrop[hidden] { display: none; }
+.modal {
+  width: min(680px, 100%);
+  max-height: 88vh;
+  overflow: auto;
+  padding: 26px;
+  background: #091321;
+  border: 1px solid var(--blue);
+  box-shadow: 0 0 50px #000b;
+}
+.modal-top { display: flex; justify-content: space-between; gap: 12px; }
+.modal h2 { font-size: 29px; font-weight: normal; margin: 0 0 14px; }
+.modal p { color: #c4cfdf; line-height: 1.7; }
+.close-button, .primary-button, .answer {
+  color: white;
+  background: #12233a;
+  border: 1px solid #4d6d91;
+  padding: 11px 14px;
+}
+.close-button { padding: 5px 12px; align-self: start; }
+.primary-button { margin-top: 14px; }
+.answers { display: grid; gap: 10px; margin-top: 20px; }
+.answer { text-align: left; }
+.answer:hover { background: #203958; }
+.answer.correct { border-color: #7ed6a1; background: #123426; }
+.answer.wrong { border-color: #ff9999; background: #3b1b23; }
+.feedback { min-height: 28px; color: #c8e6ff; }
+.resource-list { display: grid; gap: 12px; margin-top: 18px; }
+.resource-list a { color: #9bcaff; }
+@media (min-width: 1500px) {
+  .honeycomb { max-width: 1350px; }
+}
+@media (max-width: 1100px) {
+  .honeycomb { grid-template-columns: repeat(4, minmax(110px, 1fr)); }
+  .topic:nth-child(n) { transform: none; }
+  .topic:nth-child(8n + 2), .topic:nth-child(8n + 4),
+  .topic:nth-child(8n + 6), .topic:nth-child(8n + 8) { transform: translateY(16px); }
+}
+@media (max-width: 760px) {
+  header { padding: 12px; gap: 9px; flex-wrap: wrap; }
+  .brand { font-size: 18px; }
+  .search-wrap { order: 5; flex-basis: 100%; max-width: none; }
+  .sidebar { position: fixed; z-index: 15; top: 0; bottom: 0; overflow-y: auto; }
+  .sidebar.closed { margin-left: -245px; }
+  main { padding: 24px 8px 0; }
+  .honeycomb { grid-template-columns: repeat(3, minmax(95px, 1fr)); }
+  .topic:nth-child(n) { transform: none; }
+  .topic:nth-child(6n + 2), .topic:nth-child(6n + 4), .topic:nth-child(6n + 6) {
+    transform: translateY(13px);
+  }
+  .topic { padding: 5px; }
+  .topic-name { font-size: 11px; }
+  .topic-category { font-size: 8px; }
+  .topic img { height: 42%; }
+  .hero { padding-bottom: 24px; }
+  .tagline { font-size: 15px; }
+  footer { margin-top: 55px; }
+}
+@media (max-width: 390px) {
+  .honeycomb { grid-template-columns: repeat(2, minmax(100px, 1fr)); }
+  .topic:nth-child(n) { transform: none; }
+}
+</style>
+</head>
+
+<body>
+<div class="space-background" aria-hidden="true"></div>
+
+<header>
+  <button class="menu-button" id="menuToggle" aria-label="Toggle navigation">☰</button>
+  <a class="brand" href="#" aria-label="Astrocomb home">ASTRO<span>COMB</span></a>
+  <div class="search-wrap">
+    <input id="searchInput" type="search" placeholder="Search scientific subjects..." aria-label="Search subjects">
+  </div>
+  <div class="language-switch" aria-label="Language">
+    <button id="langEN" class="active" type="button">EN</button>
+    <button id="langEL" type="button">ΕΛ</button>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar">
+    <section class="side-section">
+      <h2 class="side-heading" data-i18n="explore">EXPLORE</h2>
+      <button class="side-link" data-action="all" data-i18n="allTopics">All topics</button>
+      <button class="side-link" data-action="quiz" data-level="Easy" data-i18n="easy">Quiz — Easy</button>
+      <button class="side-link" data-action="quiz" data-level="Medium" data-i18n="medium">Quiz — Medium</button>
+      <button class="side-link" data-action="quiz" data-level="Hard" data-i18n="hard">Quiz — Hard</button>
+    </section>
+    <section class="side-section">
+      <h2 class="side-heading" data-i18n="media">NASA & ESA MEDIA</h2>
+      <button class="side-link" data-action="gallery" data-i18n="gallery">Image galleries</button>
+      <button class="side-link" data-action="nasa" data-i18n="nasaImages">NASA images</button>
+      <button class="side-link" data-action="esa" data-i18n="esaImages">ESA images</button>
+    </section>
+    <section class="side-section">
+      <h2 class="side-heading" data-i18n="about">ABOUT</h2>
+      <button class="side-link" data-action="about" data-i18n="aboutSite">About Astrocomb</button>
+      <button class="side-link" data-action="sources" data-i18n="sources">Scientific sources</button>
+    </section>
+  </aside>
+
+  <main>
+    <section class="hero">
+      <div class="emblem" aria-hidden="true">
+        <span>✧</span><span>◌</span><span>⌘</span>
+      </div>
+      <h1>ASTROCOMB</h1>
+      <p class="tagline" data-i18n="tagline">Everything you need to learn about the universe.</p>
+      <p class="hero-note" data-i18n="heroNote">Astronomy · Cosmology · Fundamental Physics</p>
+    </section>
+
+    <h2 class="section-title" data-i18n="featured">SCIENTIFIC SUBJECTS</h2>
+    <section class="honeycomb" id="topicGrid" aria-label="Scientific subjects"></section>
+    <p id="emptyMessage" class="empty" hidden data-i18n="noResults">No matching subjects were found.</p>
+
+    <footer>
+      <div>Modules Mathematical Mistakes</div>
+      <div>All Data was taken from NASA and ESA sources.</div>
+      <small>
+        <span data-i18n="footerNote">Educational portal concept. Images and external resources belong to their respective owners.</span>
+        <br>
+        <a href="https://science.nasa.gov/" target="_blank" rel="noopener noreferrer">NASA Science</a>
+        ·
+        <a href="https://www.esa.int/Science_Exploration/Space_Science" target="_blank" rel="noopener noreferrer">ESA Space Science</a>
+      </small>
+    </footer>
+  </main>
+</div>
+
+<div class="modal-backdrop" id="modalBackdrop" hidden>
+  <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-top">
+      <h2 id="modalTitle"></h2>
+      <button class="close-button" id="closeModal" aria-label="Close">✕</button>
+    </div>
+    <div id="modalBody"></div>
+  </section>
+</div>
+
+<script>
+const topics = [
+  {id:"cosmology",category:"Cosmology",en:"Distant Galaxies & Cosmology",el:"Μακρινοί Γαλαξίες & Κοσμολογία",image:"photo-1462331940025-496dfbfc7564",desc:"Explore the large-scale structure of the universe, galaxy evolution, cosmic expansion and the cosmic microwave background.",descEL:"Εξερεύνησε τη μεγάλης κλίμακας δομή του Σύμπαντος, την εξέλιξη των γαλαξιών, τη διαστολή και την κοσμική μικροκυματική ακτινοβολία υποβάθρου."},
+  {id:"milky-way",category:"Galactic Astronomy",en:"The Milky Way",el:"Ο Γαλαξίας μας",image:"photo-1446776811953-b23d57bd21aa",desc:"Study the spiral structure, stellar populations, central black hole and interstellar medium of our home galaxy.",descEL:"Μελέτησε τη σπειροειδή δομή, τους αστρικούς πληθυσμούς, τη μελανή οπή στο κέντρο και το μεσοαστρικό υλικό του Γαλαξία μας."},
+  {id:"dark-matter",category:"Cosmology",en:"Dark Matter & Dark Energy",el:"Σκοτεινή Ύλη & Σκοτεινή Ενέργεια",image:"photo-1462331940025-496dfbfc7564",desc:"Examine the observational evidence for dark matter and the accelerated expansion associated with dark energy.",descEL:"Εξέτασε τα παρατηρησιακά στοιχεία για τη σκοτεινή ύλη και την επιταχυνόμενη διαστολή που συνδέεται με τη σκοτεινή ενέργεια."},
+  {id:"black-holes",category:"Relativistic Astrophysics",en:"Black Holes & Neutron Stars",el:"Μαύρες Τρύπες & Αστέρες Νετρονίων",image:"photo-1462331940025-496dfbfc7564",desc:"Learn about event horizons, accretion disks, gravitational waves and the extreme remnants of stellar evolution.",descEL:"Μάθε για τους ορίζοντες γεγονότων, τους δίσκους προσαύξησης, τα βαρυτικά κύματα και τα ακραία κατάλοιπα της αστρικής εξέλιξης."},
+  {id:"solar-system",category:"Planetary Science",en:"Solar System & Planets",el:"Ηλιακό Σύστημα & Πλανήτες",image:"photo-1614730321146-b6fa6a46bcb4",desc:"Explore the Sun, planets, moons, dwarf planets and the physical processes shaping planetary systems.",descEL:"Εξερεύνησε τον Ήλιο, τους πλανήτες, τους δορυφόρους, τους νάνους πλανήτες και τις διεργασίες που διαμορφώνουν τα πλανητικά συστήματα."},
+  {id:"stars",category:"Stellar Astrophysics",en:"Stars & Stellar Evolution",el:"Άστρα & Αστρική Εξέλιξη",image:"photo-1419242902214-272b3f66ee7a",desc:"Follow stellar birth, nuclear fusion, stellar lifetimes, supernovae and the origin of chemical elements.",descEL:"Παρακολούθησε τη γέννηση των άστρων, την πυρηνική σύντηξη, τη ζωή τους, τους υπερκαινοφανείς και την προέλευση των χημικών στοιχείων."},
+  {id:"exoplanets",category:"Planetary Science",en:"Exoplanets & Habitable Worlds",el:"Εξωπλανήτες & Κατοικήσιμοι Κόσμοι",image:"photo-1614728263952-84ea256f9679",desc:"Investigate planets beyond the Solar System, detection methods, atmospheres and habitability.",descEL:"Μελέτησε πλανήτες έξω από το Ηλιακό Σύστημα, τις μεθόδους ανίχνευσης, τις ατμόσφαιρες και την κατοικησιμότητα."},
+  {id:"astrobiology",category:"Astrobiology",en:"Astrobiology & Life",el:"Αστροβιολογία & Ζωή",image:"photo-1446776811953-b23d57bd21aa",desc:"Examine the chemistry of life, extremophiles, habitable environments and the scientific search for life beyond Earth.",descEL:"Εξέτασε τη χημεία της ζωής, τους ακραίους οργανισμούς, τα κατοικήσιμα περιβάλλοντα και την επιστημονική αναζήτηση ζωής πέρα από τη Γη."},
+  {id:"nebulae",category:"Stellar Astrophysics",en:"Nebulae & Star Clusters",el:"Νεφελώματα & Αστρικά Σμήνη",image:"photo-1462331940025-496dfbfc7564",desc:"Study star-forming regions, emission nebulae, open clusters and globular clusters.",descEL:"Μελέτησε περιοχές σχηματισμού άστρων, νεφελώματα εκπομπής, ανοικτά και σφαιρωτά αστρικά σμήνη."},
+  {id:"telescopes",category:"Astronomical Methods",en:"Telescopes & Observatories",el:"Τηλεσκόπια & Αστεροσκοπεία",image:"photo-1517976487492-5750f3195933",desc:"Discover how optical, radio, infrared, X-ray and space telescopes reveal different parts of the universe.",descEL:"Ανακάλυψε πώς τα οπτικά, ραδιοτηλεσκόπια, υπέρυθρα, ακτίνων Χ και διαστημικά τηλεσκόπια εξερευνούν το Σύμπαν."},
+  {id:"quantum",category:"Fundamental Physics",en:"Quantum Physics",el:"Κβαντική Φυσική",image:"photo-1635070041078-e363dbe005cb",desc:"Explore quantum states, superposition, uncertainty, entanglement and the probabilistic description of nature.",descEL:"Εξερεύνησε τις κβαντικές καταστάσεις, την υπέρθεση, την αβεβαιότητα, τη διεμπλοκή και την πιθανοκρατική περιγραφή της φύσης."},
+  {id:"relativity",category:"Fundamental Physics",en:"General Relativity & Gravity",el:"Γενική Σχετικότητα & Βαρύτητα",image:"photo-1462331940025-496dfbfc7564",desc:"Understand spacetime curvature, gravitational lensing, orbital motion and tests of Einstein's theory.",descEL:"Κατανόησε την καμπύλωση του χωροχρόνου, τον βαρυτικό φακό, τις τροχιές και τις δοκιμές της θεωρίας του Αϊνστάιν."},
+  {id:"particles",category:"Fundamental Physics",en:"Particle Physics",el:"Σωματιδιακή Φυσική",image:"photo-1635070041078-e363dbe005cb",desc:"Study fundamental particles, the Standard Model, particle interactions and the early universe.",descEL:"Μελέτησε τα θεμελιώδη σωματίδια, το Καθιερωμένο Πρότυπο, τις αλληλεπιδράσεις και το πρώιμο Σύμπαν."},
+  {id:"missions",category:"Space Exploration",en:"Space Missions & Exploration",el:"Διαστημικές Αποστολές & Εξερεύνηση",image:"photo-1446776811953-b23d57bd21aa",desc:"Explore robotic spacecraft, planetary missions, space observatories and human exploration programmes.",descEL:"Εξερεύνησε ρομποτικά διαστημόπλοια, πλανητικές αποστολές, διαστημικά παρατηρητήρια και επανδρωμένα προγράμματα."},
+  {id:"small-bodies",category:"Planetary Science",en:"Asteroids, Comets & Small Bodies",el:"Αστεροειδείς, Κομήτες & Μικρά Σώματα",image:"photo-1614728263952-84ea256f9679",desc:"Learn about primitive Solar System material, impact hazards and the clues small bodies preserve about planetary origins.",descEL:"Μάθε για το αρχέγονο υλικό του Ηλιακού Συστήματος, τους κινδύνους πρόσκρουσης και τα στοιχεία για την προέλευση των πλανητών."},
+  {id:"sun",category:"Heliophysics",en:"The Sun & Space Weather",el:"Ήλιος & Διαστημικός Καιρός",image:"photo-1614730321146-b6fa6a46bcb4",desc:"Investigate solar magnetic activity, flares, coronal mass ejections and their effects on Earth.",descEL:"Ερεύνησε τη μαγνητική δραστηριότητα του Ήλιου, τις εκλάμψεις, τις στεμματικές εκτοξεύσεις μάζας και τις επιπτώσεις στη Γη."},
+  {id:"mechanics",category:"Classical Physics",en:"Classical Mechanics",el:"Κλασική Μηχανική",image:"photo-1635070041078-e363dbe005cb",desc:"Explore motion, force, energy, momentum and the mathematical laws governing macroscopic systems.",descEL:"Εξερεύνησε την κίνηση, τη δύναμη, την ενέργεια, την ορμή και τους μαθηματικούς νόμους των μακροσκοπικών συστημάτων."},
+  {id:"electromagnetism",category:"Classical Physics",en:"Electromagnetism",el:"Ηλεκτρομαγνητισμός",image:"photo-1635070041078-e363dbe005cb",desc:"Study electric and magnetic fields, electromagnetic waves and the radiation observed across astronomy.",descEL:"Μελέτησε ηλεκτρικά και μαγνητικά πεδία, ηλεκτρομαγνητικά κύματα και την ακτινοβολία που παρατηρούμε στην αστρονομία."},
+  {id:"waves",category:"Physics",en:"Waves & Optics",el:"Κύματα & Οπτική",image:"photo-1635070041078-e363dbe005cb",desc:"Understand wave behaviour, interference, diffraction, spectra and how light carries astronomical information.",descEL:"Κατανόησε τη συμπεριφορά των κυμάτων, τη συμβολή, την περίθλαση, τα φάσματα και τις πληροφορίες που μεταφέρει το φως."},
+  {id:"cosmic-background",category:"Cosmology",en:"Cosmic Microwave Background",el:"Κοσμική Μικροκυματική Ακτινοβολία",image:"photo-1462331940025-496dfbfc7564",desc:"Examine the relic radiation from the early universe and what its tiny temperature fluctuations reveal.",descEL:"Εξέτασε την ακτινοβολία από το πρώιμο Σύμπαν και όσα αποκαλύπτουν οι μικροσκοπικές διακυμάνσεις θερμοκρασίας."},
+  {id:"gravitational-waves",category:"Relativistic Astrophysics",en:"Gravitational Waves",el:"Βαρυτικά Κύματα",image:"photo-1462331940025-496dfbfc7564",desc:"Learn how accelerating massive objects generate spacetime ripples and how observatories detect them.",descEL:"Μάθε πώς επιταχυνόμενα μεγάλα σώματα δημιουργούν κυματισμούς στον χωροχρόνο και πώς ανιχνεύονται."},
+  {id:"galaxy-formation",category:"Galactic Astronomy",en:"Galaxy Formation & Evolution",el:"Σχηματισμός & Εξέλιξη Γαλαξιών",image:"photo-1462331940025-496dfbfc7564",desc:"Investigate galaxy morphology, mergers, star formation and the influence of supermassive black holes.",descEL:"Ερεύνησε τη μορφολογία γαλαξιών, τις συγχωνεύσεις, τον σχηματισμό άστρων και την επίδραση υπερμεγέθων μαύρων τρυπών."},
+  {id:"spectroscopy",category:"Astronomical Methods",en:"Spectroscopy & Redshift",el:"Φασματοσκοπία & Ερυθρά Μετατόπιση",image:"photo-1635070041078-e363dbe005cb",desc:"Use spectral lines to infer the composition, temperature, motion and distance of astronomical objects.",descEL:"Χρησιμοποίησε φασματικές γραμμές για να προσδιορίσεις σύσταση, θερμοκρασία, κίνηση και απόσταση ουράνιων σωμάτων."},
+  {id:"space-time",category:"Fundamental Physics",en:"Space, Time & Causality",el:"Χώρος, Χρόνος & Αιτιότητα",image:"photo-1462331940025-496dfbfc7564",desc:"Explore reference frames, simultaneity, light cones and the structure of spacetime.",descEL:"Εξερεύνησε συστήματα αναφοράς, ταυτόχρονα γεγονότα, φωτεινούς κώνους και τη δομή του χωροχρόνου."},
+  {id:"extragalactic",category:"Galactic Astronomy",en:"Active Galactic Nuclei",el:"Ενεργοί Γαλαξιακοί Πυρήνες",image:"photo-1462331940025-496dfbfc7564",desc:"Study quasars, relativistic jets and energetic processes powered by accretion onto massive black holes.",descEL:"Μελέτησε κβάζαρ, σχετικιστικούς πίδακες και ενεργειακές διεργασίες γύρω από μεγάλες μαύρες τρύπες."},
+  {id:"planet-climates",category:"Planetary Science",en:"Planetary Atmospheres & Climate",el:"Πλανητικές Ατμόσφαιρες & Κλίμα",image:"photo-1614730321146-b6fa6a46bcb4",desc:"Compare atmospheric chemistry, circulation, greenhouse effects and climate histories across worlds.",descEL:"Σύγκρινε τη χημεία και την κυκλοφορία ατμοσφαιρών, το φαινόμενο του θερμοκηπίου και τα κλιματικά ιστορικά πλανητών."},
+  {id:"earth",category:"Planetary Science",en:"Earth as a Planet",el:"Η Γη ως Πλανήτης",image:"photo-1446776811953-b23d57bd21aa",desc:"Examine Earth's place in the Solar System, its magnetosphere, interior and orbital environment.",descEL:"Εξέτασε τη θέση της Γης στο Ηλιακό Σύστημα, τη μαγνητόσφαιρα, το εσωτερικό και το τροχιακό της περιβάλλον."},
+  {id:"measurement",category:"Astronomical Methods",en:"Astronomical Units & Distances",el:"Αστρονομικές Μονάδες & Αποστάσεις",image:"photo-1446776811953-b23d57bd21aa",desc:"Learn about the astronomical unit, light-year, parsec, parallax and the cosmic distance ladder.",descEL:"Μάθε για την αστρονομική μονάδα, το έτος φωτός, το parsec, την παράλλαξη και την κοσμική κλίμακα αποστάσεων."},
+  {id:"nuclear",category:"Physics",en:"Nuclear Physics & Fusion",el:"Πυρηνική Φυσική & Σύντηξη",image:"photo-1635070041078-e363dbe005cb",desc:"Understand nuclear structure, binding energy, fusion in stars and the formation of elements.",descEL:"Κατανόησε την πυρηνική δομή, την ενέργεια σύνδεσης, τη σύντηξη στα άστρα και τον σχηματισμό στοιχείων."},
+  {id:"astrohistory",category:"Astronomy",en:"History of Astronomy",el:"Ιστορία της Αστρονομίας",image:"photo-1446776811953-b23d57bd21aa",desc:"Trace the development of astronomical ideas from early observations to modern space science.",descEL:"Ακολούθησε την εξέλιξη των αστρονομικών ιδεών από τις πρώτες παρατηρήσεις έως τη σύγχρονη διαστημική επιστήμη."}
+];
+
+const translations = {
+  en: {
+    explore:"EXPLORE", allTopics:"All topics", easy:"Quiz — Easy",
+    medium:"Quiz — Medium", hard:"Quiz — Hard", media:"NASA & ESA MEDIA",
+    gallery:"Image galleries", nasaImages:"NASA images", esaImages:"ESA images",
+    about:"ABOUT", aboutSite:"About Astrocomb", sources:"Scientific sources",
+    tagline:"Everything you need to learn about the universe.",
+    heroNote:"Astronomy · Cosmology · Fundamental Physics",
+    featured:"SCIENTIFIC SUBJECTS", noResults:"No matching subjects were found.",
+    footerNote:"Educational portal concept. Images and external resources belong to their respective owners.",
+    readMore:"Explore topic", category:"Research field", close:"Close",
+    aboutTitle:"About Astrocomb",
+    aboutText:"Astrocomb is an educational concept for exploring astronomy, cosmology and fundamental physics. Each hexagon opens an introductory overview and links to established scientific resources. For research use, consult the linked source material directly.",
+    sourcesTitle:"Scientific sources",
+    sourcesText:"Use the primary sources below to verify facts, read mission documentation and explore scientific imagery.",
+    galleryTitle:"NASA & ESA image galleries",
+    nasaTitle:"NASA Image and Video Library",
+    esaTitle:"ESA Multimedia Gallery",
+    quizTitle:"Knowledge check", question:"Question",
+    next:"Next question", restart:"Try again", correct:"Correct answer.",
+    incorrect:"Not quite. The correct answer is:", finished:"Quiz complete!",
+    score:"Your score", choose:"Choose an answer to receive feedback.",
+    searchPlaceholder:"Search scientific subjects..."
+  },
+  el: {
+    explore:"ΕΞΕΡΕΥΝΗΣΗ", allTopics:"Όλα τα θέματα", easy:"Κουίζ — Εύκολο",
+    medium:"Κουίζ — Μεσαίο", hard:"Κουίζ — Δύσκολο", media:"ΥΛΙΚΟ NASA & ESA",
+    gallery:"Συλλογές εικόνων", nasaImages:"Εικόνες NASA", esaImages:"Εικόνες ESA",
+    about:"ΣΧΕΤΙΚΑ", aboutSite:"Σχετικά με το Astrocomb", sources:"Επιστημονικές πηγές",
+    tagline:"Όλα όσα χρειάζεσαι για να μάθεις για το Σύμπαν.",
+    heroNote:"Αστρονομία · Κοσμολογία · Θεμελιώδης Φυσική",
+    featured:"ΕΠΙΣΤΗΜΟΝΙΚΑ ΘΕΜΑΤΑ", noResults:"Δεν βρέθηκαν σχετικά θέματα.",
+    footerNote:"Εκπαιδευτική πύλη. Οι εικόνες και οι εξωτερικοί πόροι ανήκουν στους αντίστοιχους δημιουργούς.",
+    readMore:"Εξερεύνηση θέματος", category:"Επιστημονικό πεδίο", close:"Κλείσιμο",
+    aboutTitle:"Σχετικά με το Astrocomb",
+    aboutText:"Το Astrocomb είναι μια εκπαιδευτική ιδέα για την εξερεύνηση της αστρονομίας, της κοσμολογίας και της θεμελιώδους φυσικής. Κάθε εξάγωνο ανοίγει μια εισαγωγική παρουσίαση και συνδέσμους προς επιστημονικές πηγές. Για ερευνητική χρήση, συμβουλέψου απευθείας τις πρωτογενείς πηγές.",
+    sourcesTitle:"Επιστημονικές πηγές",
+    sourcesText:"Χρησιμοποίησε τις πρωτογενείς πηγές για επαλήθευση πληροφοριών, τεκμηρίωση αποστολών και επιστημονικές εικόνες.",
+    galleryTitle:"Συλλογές εικόνων NASA & ESA",
+    nasaTitle:"Βιβλιοθήκη εικόνων και βίντεο NASA",
+    esaTitle:"Συλλογή πολυμέσων ESA",
+    quizTitle:"Έλεγχος γνώσεων", question:"Ερώτηση",
+    next:"Επόμενη ερώτηση", restart:"Προσπάθησε ξανά", correct:"Σωστή απάντηση.",
+    incorrect:"Όχι ακριβώς. Η σωστή απάντηση είναι:", finished:"Το κουίζ ολοκληρώθηκε!",
+    score:"Η βαθμολογία σου", choose:"Επίλεξε απάντηση για να δεις σχόλιο.",
+    searchPlaceholder:"Αναζήτηση επιστημονικών θεμάτων..."
+  }
+};
+
+const quizzes = {
+  Easy: [
+    {q:"Which star is at the centre of our Solar System?", qEL:"Ποιο άστρο βρίσκεται στο κέντρο του Ηλιακού μας Συστήματος;", a:["The Sun","Sirius","Polaris"], aEL:["Ο Ήλιος","Ο Σείριος","Ο Πολικός Αστέρας"], correct:0},
+    {q:"Which planet is known for its prominent rings?", qEL:"Ποιος πλανήτης είναι γνωστός για τους εντυπωσιακούς δακτυλίους του;", a:["Mars","Saturn","Mercury"], aEL:["Άρης","Κρόνος","Ερμής"], correct:1},
+    {q:"What do we call a rocky object orbiting the Sun, generally smaller than a planet?", qEL:"Πώς ονομάζεται ένα βραχώδες σώμα που περιφέρεται γύρω από τον Ήλιο και είναι συνήθως μικρότερο από πλανήτη;", a:["Asteroid","Galaxy","Nebula"], aEL:["Αστεροειδής","Γαλαξίας","Νεφέλωμα"], correct:0}
+  ],
+  Medium: [
+    {q:"What does a galaxy's redshift generally indicate in an expanding universe?", qEL:"Τι υποδηλώνει γενικά η ερυθρά μετατόπιση ενός γαλαξία σε ένα διαστελλόμενο Σύμπαν;", a:["It is moving away","It has no stars","It is cooling to zero"], aEL:["Απομακρύνεται","Δεν έχει άστρα","Ψύχεται στο απόλυτο μηδέν"], correct:0},
+    {q:"What is the event horizon of a black hole?", qEL:"Τι είναι ο ορίζοντας γεγονότων μιας μαύρης τρύπας;", a:["A boundary beyond which escape is impossible","A solid surface","The orbit of Earth"], aEL:["Ένα όριο πέρα από το οποίο δεν είναι δυνατή η διαφυγή","Μια στερεή επιφάνεια","Η τροχιά της Γης"], correct:0},
+    {q:"Which method can detect an exoplanet through periodic dimming of its star?", qEL:"Ποια μέθοδος ανιχνεύει εξωπλανήτη από την περιοδική μείωση της φωτεινότητας του άστρου του;", a:["Transit method","Seismic method","Chemical combustion"], aEL:["Μέθοδος διέλευσης","Σεισμική μέθοδος","Χημική καύση"], correct:0}
+  ],
+  Hard: [
+    {q:"What does the cosmic microwave background primarily provide evidence for?", qEL:"Για τι παρέχει κυρίως στοιχεία η κοσμική μικροκυματική ακτινοβολία υποβάθρου;", a:["A hot, dense early universe","The centre of Earth","The absence of radiation"], aEL:["Ένα θερμό και πυκνό πρώιμο Σύμπαν","Το κέντρο της Γης","Την απουσία ακτινοβολίας"], correct:0},
+    {q:"In general relativity, gravity is described primarily as:", qEL:"Στη γενική σχετικότητα, η βαρύτητα περιγράφεται κυρίως ως:", a:["Curvature of spacetime","A chemical reaction","A type of sound"], aEL:["Καμπύλωση του χωροχρόνου","Χημική αντίδραση","Είδος ήχου"], correct:0},
+    {q:"What is the Pauli exclusion principle associated with?", qEL:"Με τι συνδέεται η αρχή αποκλεισμού του Pauli;", a:["Identical fermions cannot share the same quantum state","All planets have rings","Light travels only through air"], aEL:["Ταυτόσημα φερμιόνια δεν μπορούν να καταλάβουν την ίδια κβαντική κατάσταση","Όλοι οι πλανήτες έχουν δακτυλίους","Το φως ταξιδεύει μόνο στον αέρα"], correct:0}
+  ]
+};
+
+let language = "en";
+let currentQuiz = null;
+let questionIndex = 0;
+let score = 0;
+let answered = false;
+
+const grid = document.getElementById("topicGrid");
+const searchInput = document.getElementById("searchInput");
+const modalBackdrop = document.getElementById("modalBackdrop");
+const modalTitle = document.getElementById("modalTitle");
+const modalBody = document.getElementById("modalBody");
+const sidebar = document.getElementById("sidebar");
+
+function t(key) { return translations[language][key] || key; }
+function topicTitle(topic) { return language === "el" ? topic.el : topic.en; }
+
+function renderTopics(filter = "") {
+  grid.innerHTML = "";
+  const normalized = filter.trim().toLocaleLowerCase(language);
+  let visible = 0;
+
+  topics.forEach(topic => {
+    const title = topicTitle(topic);
+    const category = topic.category;
+    const searchable = `${title} ${topic.en} ${topic.el} ${category} ${topic.desc} ${topic.descEL}`.toLocaleLowerCase();
+    if (normalized && !searchable.includes(normalized)) return;
+    visible++;
+
+    const button = document.createElement("button");
+    button.className = "topic";
+    button.type = "button";
+    button.setAttribute("aria-label", title);
+    button.innerHTML = `
+      <img src="https://images.unsplash.com/${topic.image}?auto=format&fit=crop&w=450&q=75"
+           alt="" loading="lazy">
+      <span class="topic-name"></span>
+      <span class="topic-category"></span>`;
+    button.querySelector(".topic-name").textContent = title;
+    button.querySelector(".topic-category").textContent = category;
+    button.addEventListener("click", () => openTopic(topic));
+    grid.appendChild(button);
+  });
+
+  document.getElementById("emptyMessage").hidden = visible !== 0;
+}
+
+function openModal(title, content) {
+  modalTitle.textContent = title;
+  modalBody.replaceChildren();
+  modalBody.appendChild(content);
+  modalBackdrop.hidden = false;
+  document.getElementById("closeModal").focus();
+}
+function closeModal() { modalBackdrop.hidden = true; }
+
+function openTopic(topic) {
+  const content = document.createElement("div");
+  const category = document.createElement("p");
+  category.textContent = `${t("category")}: ${topic.category}`;
+  const description = document.createElement("p");
+  description.textContent = language === "el" ? topic.descEL : topic.desc;
+  const resources = document.createElement("div");
+  resources.className = "resource-list";
+  resources.innerHTML = `
+    <a href="https://science.nasa.gov/" target="_blank" rel="noopener noreferrer">NASA Science ↗</a>
+    <a href="https://www.esa.int/Science_Exploration/Space_Science" target="_blank" rel="noopener noreferrer">ESA Space Science ↗</a>`;
+  const note = document.createElement("p");
+  note.textContent = language === "el"
+    ? "Οι σύνδεσμοι οδηγούν σε επίσημες πηγές. Η παρουσίαση είναι εισαγωγική και όχι πλήρες επιστημονικό άρθρο."
+    : "Links lead to official sources. This is an introductory overview, not a fully referenced research article.";
+  content.append(category, description, resources, note);
+  openModal(topicTitle(topic), content);
+}
+
+function startQuiz(level) {
+  currentQuiz = { level, questions: quizzes[level] };
+  questionIndex = 0;
+  score = 0;
+  showQuestion();
+}
+
+function showQuestion() {
+  answered = false;
+  const question = currentQuiz.questions[questionIndex];
+  const content = document.createElement("div");
+  const progress = document.createElement("p");
+  progress.textContent = `${t("question")} ${questionIndex + 1} / ${currentQuiz.questions.length} · ${currentQuiz.level}`;
+  const q = document.createElement("p");
+  q.textContent = language === "el" ? question.qEL : question.q;
+  const answers = document.createElement("div");
+  answers.className = "answers";
+  const feedback = document.createElement("p");
+  feedback.className = "feedback";
+  feedback.setAttribute("aria-live", "polite");
+
+  (language === "el" ? question.aEL : question.a).forEach((answer, index) => {
+    const button = document.createElement("button");
+    button.className = "answer";
+    button.textContent = `${String.fromCharCode(65 + index)}. ${answer}`;
+    button.addEventListener("click", () => {
+      if (answered) return;
+      answered = true;
+      const isCorrect = index === question.correct;
+      if (isCorrect) score++;
+      button.classList.add(isCorrect ? "correct" : "wrong");
+      [...answers.children].forEach((child, childIndex) => {
+        child.disabled = true;
+        if (childIndex === question.correct) child.classList.add("correct");
+      });
+      const correctAnswer = (language === "el" ? question.aEL : question.a)[question.correct];
+      feedback.textContent = isCorrect ? t("correct") : `${t("incorrect")} ${correctAnswer}`;
+      nextButton.hidden = false;
+    });
+    answers.appendChild(button);
+  });
+
+  const nextButton = document.createElement("button");
+  nextButton.className = "primary-button";
+  nextButton.textContent = questionIndex === currentQuiz.questions.length - 1 ? t("finished") : t("next");
+  nextButton.hidden = true;
+  nextButton.addEventListener("click", () => {
+    questionIndex++;
+    if (questionIndex < currentQuiz.questions.length) {
+      showQuestion();
+    } else {
+      showQuizResult();
+    }
+  });
+
+  content.append(progress, q, answers, feedback, nextButton);
+  openModal(t("quizTitle"), content);
+}
+
+function showQuizResult() {
+  const content = document.createElement("div");
+  const result = document.createElement("p");
+  result.textContent = `${t("score")}: ${score} / ${currentQuiz.questions.length}`;
+  const retry = document.createElement("button");
+  retry.className = "primary-button";
+  retry.textContent = t("restart");
+  retry.addEventListener("click", () => startQuiz(currentQuiz.level));
+  content.append(result, retry);
+  openModal(t("finished"), content);
+}
+
+function openResources(kind) {
+  const content = document.createElement("div");
+  const p = document.createElement("p");
+  const links = document.createElement("div");
+  links.className = "resource-list";
+
+  if (kind === "about") {
+    p.textContent = t("aboutText");
+  } else if (kind === "sources") {
+    p.textContent = t("sourcesText");
+  } else {
+    p.textContent = t("galleryTitle");
+  }
+  content.appendChild(p);
+
+  const resources = [
+    ["NASA Science", "https://science.nasa.gov/"],
+    [t("nasaTitle"), "https://images.nasa.gov/"],
+    ["ESA Space Science", "https://www.esa.int/Science_Exploration/Space_Science"],
+    [t("esaTitle"), "https://www.esa.int/ESA_Multimedia/Images"]
+  ];
+
+  resources.forEach(([label, url]) => {
+    const a = document.createElement("a");
+    a.href = url;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    a.textContent = `${label} ↗`;
+    links.appendChild(a);
+  });
+  content.appendChild(links);
+
+  const title = kind === "about" ? t("aboutTitle")
+    : kind === "sources" ? t("sourcesTitle") : t("galleryTitle");
+  openModal(title, content);
+}
+
+document.getElementById("menuToggle").addEventListener("click", () => {
+  sidebar.classList.toggle("closed");
+});
+document.getElementById("closeModal").addEventListener("click", closeModal);
+modalBackdrop.addEventListener("click", event => {
+  if (event.target === modalBackdrop) closeModal();
+});
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape") closeModal();
+});
+searchInput.addEventListener("input", event => renderTopics(event.target.value));
+
+document.querySelectorAll("[data-action]").forEach(button => {
+  button.addEventListener("click", () => {
+    const action = button.dataset.action;
+    if (action === "all") {
+      searchInput.value = "";
+      renderTopics();
+    } else if (action === "quiz") {
+      startQuiz(button.dataset.level);
+    } else {
+      openResources(action);
+    }
+    if (window.innerWidth <= 760) sidebar.classList.add("closed");
+  });
+});
+
+function setLanguage(nextLanguage) {
+  language = nextLanguage;
+  document.documentElement.lang = language;
+  document.getElementById("langEN").classList.toggle("active", language === "en");
+  document.getElementById("langEL").classList.toggle("active", language === "el");
+  document.querySelectorAll("[data-i18n]").forEach(element => {
+    const key = element.dataset.i18n;
+    element.textContent = t(key);
+  });
+  searchInput.placeholder = t("searchPlaceholder");
+  searchInput.setAttribute("aria-label", t("searchPlaceholder"));
+  renderTopics(searchInput.value);
+}
+document.getElementById("langEN").addEventListener("click", () => setLanguage("en"));
+document.getElementById("langEL").addEventListener("click", () => setLanguage("el"));
+
+renderTopics();
+if (window.innerWidth <= 760) sidebar.classList.add("closed");
+</script>
+</body>
+</html>
