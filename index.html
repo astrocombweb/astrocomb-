@@ -36,17 +36,49 @@ button:focus-visible, input:focus-visible, a:focus-visible {
   position: fixed;
   inset: 0;
   z-index: -2;
+  overflow: hidden;
   background:
-    linear-gradient(90deg, rgba(3,7,15,.95), rgba(3,7,15,.45) 35%, rgba(3,7,15,.28)),
-    linear-gradient(0deg, rgba(3,7,15,.65), transparent 65%),
-    radial-gradient(ellipse at 50% 0%, #102447 0%, #050914 68%)
-    center / cover no-repeat;
+    linear-gradient(90deg, rgba(3,7,15,.76), rgba(3,7,15,.32) 48%, rgba(3,7,15,.48)),
+    linear-gradient(0deg, rgba(3,7,15,.66), rgba(3,7,15,.12) 65%),
+    url("https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&w=2400&q=90")
+    center 42% / cover no-repeat,
+    #050914;
+}
+.space-background::before {
+  content: "";
+  position: absolute;
+  inset: -8%;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 18% 28%, rgba(68,104,210,.17), transparent 34%),
+    radial-gradient(ellipse at 78% 62%, rgba(142,53,181,.16), transparent 32%),
+    radial-gradient(ellipse at 56% 12%, rgba(68,174,230,.10), transparent 28%);
+  animation: nebulaDrift 28s ease-in-out infinite alternate;
 }
 .space-background::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse at 70% 35%, transparent 5%, #050914aa 100%);
+  pointer-events: none;
+  background:
+    radial-gradient(1px 1px at 12% 22%, #fff 50%, transparent 100%),
+    radial-gradient(1px 1px at 72% 18%, #d8e8ff 50%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 84% 72%, #fff 50%, transparent 100%),
+    radial-gradient(1px 1px at 33% 82%, #d8e8ff 50%, transparent 100%),
+    radial-gradient(ellipse at 70% 35%, transparent 5%, #05091488 100%);
+  background-size: auto, auto, auto, auto, auto;
+  animation: starTwinkle 7s ease-in-out infinite alternate;
+}
+@keyframes nebulaDrift {
+  from { transform: scale(1) translate3d(-.5%, 0, 0); }
+  to { transform: scale(1.08) translate3d(.5%, -1%, 0); }
+}
+@keyframes starTwinkle {
+  from { opacity: .72; }
+  to { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .space-background::before, .space-background::after { animation: none; }
 }
 header {
   min-height: 86px;
@@ -75,6 +107,34 @@ header {
   white-space: nowrap;
 }
 .brand span { color: var(--blue); }
+.brand-emblem {
+  width: 91px;
+  height: 42px;
+  flex: 0 0 91px;
+  position: relative;
+  margin-left: -8px;
+}
+.brand-emblem span {
+  position: absolute;
+  top: 2px;
+  width: 34px;
+  height: 31px;
+  overflow: hidden;
+  clip-path: polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);
+  border: 1px solid var(--blue);
+  background: #081322;
+  box-shadow: 0 0 12px rgba(120,185,255,.2);
+}
+.brand-emblem span:nth-child(1) { left: 0; }
+.brand-emblem span:nth-child(2) { left: 28px; top: 10px; }
+.brand-emblem span:nth-child(3) { left: 56px; }
+.brand-emblem img { width: 100%; height: 100%; display: block; object-fit: cover; }
+@media (max-width: 760px) {
+  .brand-emblem { width: 72px; flex-basis: 72px; transform: scale(.82); transform-origin: left center; margin-left: -10px; margin-right: -9px; }
+}
+@media (max-width: 390px) {
+  .brand-emblem { display: none; }
+}
 .search-wrap { flex: 1; max-width: 540px; margin-left: auto; }
 .search-wrap input {
   width: 100%;
@@ -363,6 +423,11 @@ footer small { font: 11px Arial, sans-serif; color: var(--muted); }
 <header>
   <button class="menu-button" id="menuToggle" aria-label="Toggle navigation">☰</button>
   <a class="brand" href="#" aria-label="Astrocomb home">ASTRO<span>COMB</span></a>
+  <div class="brand-emblem" aria-label="Saturn, galaxy and black hole">
+    <span><img alt="Saturn — NASA image" loading="lazy"></span>
+    <span><img alt="Galaxy — NASA image" loading="lazy"></span>
+    <span><img alt="Black hole — NASA image" loading="lazy"></span>
+  </div>
   <div class="search-wrap">
     <input id="searchInput" type="search" placeholder="Search scientific subjects..." aria-label="Search subjects">
   </div>
@@ -647,24 +712,26 @@ async function loadTopicImages() {
 }
 async function loadEmblemSaturn() {
   const queries = [
-    {selector: ".emblem span:nth-child(1) img", topic: {id:"emblem-saturn",en:"Saturn planet",el:"Κρόνος",category:"Planetary Science"}},
-    {selector: ".emblem span:nth-child(2) img", topic: {id:"emblem-galaxy",en:"spiral galaxy",el:"σπειροειδής γαλαξίας",category:"Galactic Astronomy"}},
-    {selector: ".emblem span:nth-child(3) img", topic: {id:"emblem-blackhole",en:"black hole",el:"μαύρη τρύπα",category:"Relativistic Astrophysics"}}
+    {selector: "span:nth-child(1) img", topic: {id:"emblem-saturn",en:"Saturn planet",el:"Κρόνος",category:"Planetary Science"}},
+    {selector: "span:nth-child(2) img", topic: {id:"emblem-galaxy",en:"spiral galaxy",el:"σπειροειδής γαλαξίας",category:"Galactic Astronomy"}},
+    {selector: "span:nth-child(3) img", topic: {id:"emblem-blackhole",en:"black hole",el:"μαύρη τρύπα",category:"Relativistic Astrophysics"}}
   ];
   const excluded = new Set(usedTopicImages);
   for (const item of queries) {
-    const image = document.querySelector(item.selector);
+    const images = document.querySelectorAll(".emblem " + item.selector + ", .brand-emblem " + item.selector);
     const candidate = await findNasaImage(item.topic, excluded);
-    if (candidate && image) {
-      image.src = candidate.url;
-      image.alt = item.topic.en + " — NASA image";
+    if (candidate) {
+      images.forEach(image => {
+        image.src = candidate.url;
+        image.alt = item.topic.en + " — NASA image";
+        image.hidden = false;
+      });
       excluded.add(candidate.url);
-    } else if (image) {
-      image.hidden = true;
+    } else {
+      images.forEach(image => { image.hidden = true; });
     }
   }
 }
-
 function checkImageUrl(url) {
   return new Promise(resolve => {
     const probe = new Image();
