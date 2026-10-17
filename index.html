@@ -110,34 +110,35 @@ header {
 .brand-emblem {
   display: flex;
   align-items: center;
-  gap: 4px;
-  width: 122px;
+  justify-content: flex-start;
+  gap: 3px;
+  width: 132px;
   height: 42px;
-  flex: 0 0 122px;
+  flex: 0 0 132px;
   position: relative;
-  margin-left: -4px;
+  margin-left: 0;
 }
 .brand-emblem span {
   position: relative;
   display: block;
-  flex: 0 0 36px;
-  width: 36px;
-  height: 32px;
+  flex: 0 0 40px;
+  width: 40px;
+  height: 36px;
   overflow: hidden;
   -webkit-clip-path: polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);
   clip-path: polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);
-  border: 1px solid var(--blue);
   background: #081322;
+  outline: 1px solid var(--blue);
   box-shadow: 0 0 12px rgba(120,185,255,.2);
 }
 .brand-emblem img { width: 100%; height: 100%; display: block; object-fit: cover; }
 @media (max-width: 760px) {
-  .brand-emblem { width: 108px; flex-basis: 108px; gap: 2px; margin-left: -4px; }
-  .brand-emblem span { flex-basis: 32px; width: 32px; height: 29px; }
+  .brand-emblem { width: 112px; flex-basis: 112px; gap: 2px; }
+  .brand-emblem span { flex-basis: 36px; width: 36px; height: 32px; }
 }
 @media (max-width: 390px) {
-  .brand-emblem { display: flex; width: 96px; flex-basis: 96px; gap: 1px; margin-left: -5px; }
-  .brand-emblem span { flex-basis: 30px; width: 30px; height: 27px; }
+  .brand-emblem { display: flex; width: 100px; flex-basis: 100px; gap: 1px; }
+  .brand-emblem span { flex-basis: 32px; width: 32px; height: 29px; }
 }
 .search-wrap { flex: 1; max-width: 540px; margin-left: auto; }
 .search-wrap input {
