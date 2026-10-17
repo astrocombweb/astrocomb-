@@ -312,6 +312,10 @@ footer small { font: 11px Arial, sans-serif; color: var(--muted); }
 
 .resource-list { display: grid; gap: 12px; margin-top: 18px; }
 .resource-list a { color: #9bcaff; }
+
+.article-hero-image { display:block; width:100%; max-height:440px; object-fit:cover; margin:20px 0 26px; border:1px solid var(--line); background:#07111f; }
+.article-image-caption { font:12px Arial,sans-serif; color:var(--muted); margin-top:-18px; margin-bottom:24px; }
+
 .article-content { font-family: Georgia, "Times New Roman", serif; }
 .article-content h3 { color: #b9d8ff; font-size: 16px; font-weight: normal; letter-spacing: .04em; margin: 24px 0 8px; border-bottom: 1px solid var(--line); padding-bottom: 7px; }
 .article-content > p { line-height: 1.8; }
@@ -686,6 +690,25 @@ function openTopic(topic) {
   lead.className = "article-lead";
   lead.textContent = isEl ? topic.descEL : topic.desc;
   const titleText = isEl ? topic.el : topic.en;
+  const heroImage = document.createElement("img");
+  heroImage.className = "article-hero-image";
+  heroImage.alt = titleText + (isEl ? " — σχετική εικόνα NASA" : " — related NASA image");
+  heroImage.loading = "lazy";
+  const cachedImage = topicImageCache.get(topic.id);
+  const tileImage = grid.querySelector('[data-topic-id="' + topic.id + '"] img');
+  heroImage.src = cachedImage || (tileImage ? tileImage.src : "");
+  const imageCaption = document.createElement("p");
+  imageCaption.className = "article-image-caption";
+  imageCaption.textContent = isEl ? "Σχετική εικόνα από το αρχείο εικόνων της NASA" : "Related image from NASA's image archive";
+  if (!cachedImage) {
+    findNasaImage(topic.imageQuery || topic.en, usedTopicImages).then(url => {
+      if (url && modalBody.contains(content)) {
+        heroImage.src = url;
+        heroImage.alt = titleText + (isEl ? " — σχετική εικόνα NASA" : " — related NASA image");
+      }
+    });
+  }
+  content.append(category, lead, heroImage, imageCaption);
   const key = (topic.id + " " + topic.en + " " + topic.el + " " + topic.category).toLowerCase();
   let sections;
   if (/black hole|neutron star|pulsar|quasar|gravitational wave|relativistic/.test(key)) {
