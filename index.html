@@ -108,32 +108,35 @@ header {
 }
 .brand span { color: var(--blue); }
 .brand-emblem {
-  width: 91px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 122px;
   height: 42px;
-  flex: 0 0 91px;
+  flex: 0 0 122px;
   position: relative;
-  margin-left: -8px;
+  margin-left: -4px;
 }
 .brand-emblem span {
-  position: absolute;
-  top: 2px;
-  width: 34px;
-  height: 31px;
+  position: relative;
+  display: block;
+  flex: 0 0 36px;
+  width: 36px;
+  height: 32px;
   overflow: hidden;
   clip-path: polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);
   border: 1px solid var(--blue);
   background: #081322;
   box-shadow: 0 0 12px rgba(120,185,255,.2);
 }
-.brand-emblem span:nth-child(1) { left: 0; }
-.brand-emblem span:nth-child(2) { left: 28px; top: 10px; }
-.brand-emblem span:nth-child(3) { left: 56px; }
 .brand-emblem img { width: 100%; height: 100%; display: block; object-fit: cover; }
 @media (max-width: 760px) {
-  .brand-emblem { width: 72px; flex-basis: 72px; transform: scale(.82); transform-origin: left center; margin-left: -10px; margin-right: -9px; }
+  .brand-emblem { width: 108px; flex-basis: 108px; gap: 2px; margin-left: -4px; }
+  .brand-emblem span { flex-basis: 32px; width: 32px; height: 29px; }
 }
 @media (max-width: 390px) {
-  .brand-emblem { display: none; }
+  .brand-emblem { display: flex; width: 96px; flex-basis: 96px; gap: 1px; margin-left: -5px; }
+  .brand-emblem span { flex-basis: 30px; width: 30px; height: 27px; }
 }
 .search-wrap { flex: 1; max-width: 540px; margin-left: auto; }
 .search-wrap input {
