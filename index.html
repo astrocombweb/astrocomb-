@@ -541,6 +541,25 @@ function topicTitle(topic) { return language === "el" ? topic.el : topic.en; }
 const topicImageCache = new Map();
 const usedTopicImages = new Set();
 let topicImagesStarted = false;
+// Distinct temporary fallbacks keep the grid from repeating the same photo
+// while the unique NASA search results are loading.
+const topicFallbackImages = [
+  "photo-1462331940025-496dfbfc7564","photo-1446776811953-b23d57bd21aa",
+  "photo-1614730321146-b6fa6a46bcb4","photo-1419242902214-272b3f66ee7a",
+  "photo-1614728263952-84ea256f9679","photo-1517976487492-5750f3195933",
+  "photo-1635070041078-e363dbe005cb","photo-1451187580459-43490279c0fa",
+  "photo-1464802686167-b939a6910659","photo-1534796636912-3b95b3ab5986",
+  "photo-1506318137071-a8e063b4bec0","photo-1447433819943-74a20887a81e",
+  "photo-1464822759023-fed622ff2c3b","photo-1516339901601-2e1b62dc0c45",
+  "photo-1534447677768-be436bb09401","photo-1462331940025-496dfbfc7564",
+  "photo-1446776811953-b23d57bd21aa","photo-1614730321146-b6fa6a46bcb4",
+  "photo-1419242902214-272b3f66ee7a","photo-1614728263952-84ea256f9679",
+  "photo-1517976487492-5750f3195933","photo-1635070041078-e363dbe005cb",
+  "photo-1451187580459-43490279c0fa","photo-1464802686167-b939a6910659",
+  "photo-1534796636912-3b95b3ab5986","photo-1506318137071-a8e063b4bec0",
+  "photo-1447433819943-74a20887a81e","photo-1464822759023-fed622ff2c3b",
+  "photo-1516339901601-2e1b62dc0c45","photo-1534447677768-be436bb09401"
+];
 
 async function findNasaImage(query, excluded = new Set()) {
   const queries = [query, query.split(/[&]/)[0], query + " NASA mission"];
@@ -605,8 +624,8 @@ function renderTopics(filter = "") {
     button.dataset.topicId = topic.id;
     button.setAttribute("aria-label", title);
     button.innerHTML = `
-      <img src="${topicImageCache.get(topic.id) || "https://images.unsplash.com/" + topic.image + "?auto=format&fit=crop&w=450&q=75"}"
-           alt="${title} — NASA image" loading="lazy" referrerpolicy="no-referrer">
+      <img src="${topicImageCache.get(topic.id) || "https://images.unsplash.com/" + topicFallbackImages[topics.indexOf(topic) % topicFallbackImages.length] + "?auto=format&fit=crop&w=450&q=75"}"
+           alt="${title} — space image" loading="lazy" referrerpolicy="no-referrer">
       <span class="topic-name"></span>
       <span class="topic-category"></span>`;
     button.querySelector(".topic-name").textContent = title;
