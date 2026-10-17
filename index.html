@@ -599,6 +599,14 @@ const topicFallbackImages = [
   "photo-1500534314209-a25e0f4c2a1f",
   "photo-1490730141103-6cac27aaab94"
 ];
+// Keep fallback imagery unique across every topic, including topics added later.
+const assignedFallbacks = new Set();
+topics.forEach(topic => {
+  if (!topic.image || assignedFallbacks.has(topic.image)) {
+    topic.image = topicFallbackImages.find(image => !assignedFallbacks.has(image));
+  }
+  if (topic.image) assignedFallbacks.add(topic.image);
+});
 
 function checkImageUrl(url) {
   return new Promise(resolve => {
@@ -625,7 +633,7 @@ async function findNasaImage(query, excluded = new Set()) {
         const links = item.links || [];
         const link = links.find(entry => entry.render === "image") || links[0];
         return {url: link && link.href, score};
-      }).filter(item => item.url && item.score > 0 && !excluded.has(item.url)).sort((a,b) => b.score-a.score);
+      }).filter(item => item.url && item.score >= Math.min(3, terms.length) && !excluded.has(item.url)).sort((a,b) => b.score-a.score);
       for (const candidate of candidates.slice(0, 25)) {
         if (await checkImageUrl(candidate.url)) return candidate.url;
       }
