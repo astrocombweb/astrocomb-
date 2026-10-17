@@ -264,6 +264,21 @@ footer small { font: 11px Arial, sans-serif; color: var(--muted); }
   border: 1px solid var(--blue);
   box-shadow: 0 0 50px #000b;
 }
+.modal-backdrop.article-mode { padding: 0; background: #050914; }
+.modal-backdrop.article-mode .modal {
+  width: 100%; height: 100%; max-height: none; border: 0; box-shadow: none;
+  padding: clamp(22px, 5vw, 68px); overflow-y: auto;
+}
+.modal-backdrop.article-mode .modal-top {
+  position: sticky; top: -1px; z-index: 2; padding: 12px 0 18px;
+  margin: -12px 0 18px; background: #091321f2; border-bottom: 1px solid var(--line);
+}
+.modal-backdrop.article-mode .modal h2 { font-size: clamp(28px, 4vw, 48px); }
+.full-article { max-width: 920px; margin: 0 auto; }
+.full-article .article-lead { font-size: clamp(18px, 2vw, 22px); color: #e0eaff; }
+.full-article h3 { font-size: 19px; margin-top: 34px; }
+.full-article p { font-size: 17px; line-height: 1.95; }
+.full-article .article-note { margin-top: 42px; padding-top: 20px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); }
 .modal-top { display: flex; justify-content: space-between; gap: 12px; }
 .modal h2 { font-size: 29px; font-weight: normal; margin: 0 0 14px; }
 .modal p { color: #c4cfdf; line-height: 1.7; }
@@ -555,116 +570,97 @@ function openModal(title, content) {
   modalBackdrop.hidden = false;
   document.getElementById("closeModal").focus();
 }
-function closeModal() { modalBackdrop.hidden = true; }
+function closeModal() { modalBackdrop.hidden = true; modalBackdrop.classList.remove("article-mode"); document.body.classList.remove("article-open"); }
 
 function openTopic(topic) {
   const content = document.createElement("article");
-  content.className = "article-content";
-
+  content.className = "article-content full-article";
+  const isEl = language === "el";
   const category = document.createElement("p");
   category.className = "topic-category";
-  category.textContent = `${t("category")}: ${topic.category}`;
-
+  category.textContent = t("category") + ": " + topic.category;
   const lead = document.createElement("p");
-  lead.textContent = language === "el" ? topic.descEL : topic.desc;
-
-  const overviewTitle = document.createElement("h3");
-  overviewTitle.textContent = t("articleAim");
-  const overview = document.createElement("p");
-  overview.textContent = language === "el"
-    ? `Το θέμα «${topic.el}» εξετάζεται εδώ μέσα από τις βασικές επιστημονικές ιδέες, τις παρατηρήσεις και τα ερωτήματα που καθοδηγούν τη σύγχρονη έρευνα. Η εισαγωγή συνοψίζει το αντικείμενο και λειτουργεί ως αφετηρία για περαιτέρω μελέτη.`
-    : `This article introduces “${topic.en}” through its central scientific ideas, observations and open questions. The overview summarizes the field and provides a starting point for further study.`;
-
-  const conceptsTitle = document.createElement("h3");
-  conceptsTitle.textContent = t("keyConcepts");
-  const concepts = document.createElement("p");
-  concepts.textContent = language === "el"
-    ? "Κεντρικό σημείο είναι η σύνδεση θεωρίας και παρατήρησης: οι επιστήμονες διατυπώνουν μοντέλα, τα συγκρίνουν με δεδομένα τηλεσκοπίων ή διαστημικών αποστολών και αναθεωρούν τα συμπεράσματά τους όταν εμφανίζονται νέα στοιχεία. Οι μετρήσεις έχουν αβεβαιότητες και πρέπει να ερμηνεύονται στο πλαίσιο των μεθόδων που χρησιμοποιήθηκαν."
-    : "A central principle is the connection between theory and observation: researchers build models, compare them with telescope or spacecraft data, and revise conclusions when new evidence appears. Measurements have uncertainties and should be interpreted in the context of the methods used.";
-
-  const analysisTitle = document.createElement("h3");
-  analysisTitle.textContent = t("interpretation");
-  const analysis = document.createElement("p");
-  analysis.textContent = language === "el"
-    ? "Η εκπαιδευτική σύνθεση του Astrocomb εστιάζει στο τι γνωρίζουμε από παρατηρήσεις, ποια συμπεράσματα υποστηρίζονται από τα δεδομένα και ποια ερωτήματα παραμένουν ανοικτά. Το κείμενο αποτελεί εισαγωγική ανάλυση και όχι επίσημη δημοσίευση της NASA ή της ESA."
-    : "Astrocomb’s educational synthesis distinguishes what observations show, which conclusions are supported by evidence, and which questions remain open. This is an introductory analysis, not an official NASA or ESA publication.";
-
-  const methodologyTitle = document.createElement("h3");
-  methodologyTitle.textContent = t("methodology");
-  const methodology = document.createElement("p");
-  methodology.textContent = language === "el"
-    ? "Οι παρακάτω σύνδεσμοι είναι επίσημες πύλες αναφοράς επιλεγμένες με βάση το θέμα. Δεν αποτελούν από μόνοι τους τεκμηρίωση κάθε επιμέρους πρότασης. Για ακαδημαϊκή χρήση, άνοιξε την πρωτογενή σελίδα και τις δημοσιεύσεις που παραθέτει και έλεγξε ημερομηνίες και μεθόδους."
-    : "The links below are official reference portals selected to match the topic. They do not, by themselves, substantiate every individual statement. For academic use, consult the original pages and publications they cite, and check dates and methods.";
-
-  const sourcesTitle = document.createElement("h3");
-  sourcesTitle.textContent = t("sourceNote");
-  const sourceList = document.createElement("div");
-  sourceList.className = "resource-list";
-  // Curated official starting points. These are topic-relevant reference pages,
-  // not a claim that every sentence in this educational overview appears there.
-  const sourceMap = [
-    {match:/black hole|neutron star|relativistic|gravity|relativity|gravitational wave/i, sources:[
-      {label:"NASA Science — Black Holes",url:"https://science.nasa.gov/universe/black-holes/"},
-      {label:"NASA Astrophysics",url:"https://science.nasa.gov/astrophysics/"},
-      {label:"ESA Space Science",url:"https://www.esa.int/Science_Exploration/Space_Science"}
-    ]},
-    {match:/dark matter|dark energy|cosmology|big bang|early universe|cosmic|galax/i, sources:[
-      {label:"NASA Science — Universe",url:"https://science.nasa.gov/universe/"},
-      {label:"NASA Science — Galaxies",url:"https://science.nasa.gov/universe/galaxies/"},
-      {label:"ESA Space Science",url:"https://www.esa.int/Science_Exploration/Space_Science"}
-    ]},
-    {match:/exoplanet|planetary|solar system|planet|moon|comet|asteroid|mars|venus|mercury|jupiter|saturn|uranus|neptune/i, sources:[
-      {label:"NASA Science — Solar System",url:"https://science.nasa.gov/solar-system/"},
-      {label:"NASA Exoplanets",url:"https://science.nasa.gov/exoplanets/"},
-      {label:"ESA Space Science",url:"https://www.esa.int/Science_Exploration/Space_Science"}
-    ]},
-    {match:/star|stellar|nebula|supernova|pulsar|white dwarf|brown dwarf|cluster/i, sources:[
-      {label:"NASA Science — Stars",url:"https://science.nasa.gov/universe/stars/"},
-      {label:"NASA Astrophysics",url:"https://science.nasa.gov/astrophysics/"},
-      {label:"ESA Gaia mission science",url:"https://www.cosmos.esa.int/web/gaia/science"}
-    ]},
-    {match:/telescope|observator|astronomical method|light|spectrum|infrared|radio|x-ray|gamma ray/i, sources:[
-      {label:"NASA Science — Universe exploration",url:"https://science.nasa.gov/universe/"},
-      {label:"NASA Hubble science themes",url:"https://science.nasa.gov/mission/hubble/science/science-themes/"},
-      {label:"ESA Space Science",url:"https://www.esa.int/Science_Exploration/Space_Science"}
-    ]},
-    {match:/quantum|particle|physics|mechanic|force|matter|energy|space-time/i, sources:[
-      {label:"NASA Astrophysics",url:"https://science.nasa.gov/astrophysics/"},
-      {label:"NASA Science — Universe",url:"https://science.nasa.gov/universe/"},
-      {label:"ESA Space Science",url:"https://www.esa.int/Science_Exploration/Space_Science"}
-    ]},
-    {match:/life|astrobiology|habit|water|biosignature|origin/i, sources:[
-      {label:"NASA Science — Exoplanets",url:"https://science.nasa.gov/exoplanets/"},
-      {label:"NASA Science — Solar System",url:"https://science.nasa.gov/solar-system/"},
-      {label:"ESA Space Science",url:"https://www.esa.int/Science_Exploration/Space_Science"}
-    ]}
-  ];
-  const searchLabel = (topic.en + " " + topic.el + " " + topic.category);
-  const matched = sourceMap.find(group => group.match.test(searchLabel));
-  const sources = matched ? matched.sources : [
-    {label:"NASA Science — Universe",url:"https://science.nasa.gov/universe/"},
-    {label:"NASA Astrophysics",url:"https://science.nasa.gov/astrophysics/"},
-    {label:"ESA Space Science",url:"https://www.esa.int/Science_Exploration/Space_Science"}
-  ];
-  sources.push({label:"NASA Image and Video Library",url:"https://images.nasa.gov/"});
-  sources.forEach(source => {
-    const row = document.createElement("div");
-    const label = document.createElement("strong");
-    label.textContent = source.label + ": ";
-    const a = document.createElement("a");
-    a.href = source.url;
-    a.target = "_blank";
-    a.rel = "noopener noreferrer";
-    a.textContent = language === "el" ? "Πρωτογενής πηγή / περαιτέρω ανάγνωση ↗" : "Primary source / further reading ↗";
-    row.append(label, a);
-    sourceList.appendChild(row);
+  lead.className = "article-lead";
+  lead.textContent = isEl ? topic.descEL : topic.desc;
+  const titleText = isEl ? topic.el : topic.en;
+  const key = (topic.id + " " + topic.en + " " + topic.el + " " + topic.category).toLowerCase();
+  let sections;
+  if (/black hole|neutron star|pulsar|quasar|gravitational wave|relativistic/.test(key)) {
+    sections = isEl ? [
+      ["Τι είναι και πώς σχηματίζεται", "Οι μαύρες τρύπες είναι περιοχές του χωροχρόνου όπου η βαρύτητα είναι τόσο ισχυρή ώστε, πέρα από ένα όριο που ονομάζεται ορίζοντας γεγονότων, κανένα σήμα δεν μπορεί να διαφύγει προς έναν μακρινό παρατηρητή. Οι αστρικές μαύρες τρύπες μπορούν να σχηματιστούν όταν ο πυρήνας ενός αρκετά μεγάλου άστρου καταρρεύσει στο τέλος της εξέλιξής του. Υπερμεγέθεις μαύρες τρύπες βρίσκονται στα κέντρα πολλών γαλαξιών, αλλά οι διαδρομές σχηματισμού τους παραμένουν ενεργό πεδίο έρευνας."],
+      ["Πώς τις μελετάμε", "Δεν βλέπουμε απευθείας το εσωτερικό μιας μαύρης τρύπας. Συμπεραίνουμε την παρουσία της από την κίνηση άστρων και αερίου, την ακτινοβολία θερμού υλικού σε δίσκους προσαύξησης και παρατηρήσεις της σκιάς της. Οι ανιχνεύσεις βαρυτικών κυμάτων αποκαλύπτουν επίσης συγχωνεύσεις μαύρων τρυπών και αστέρων νετρονίων."],
+      ["Ορίζοντας γεγονότων και δίσκος προσαύξησης", "Ο ορίζοντας γεγονότων δεν είναι στερεή επιφάνεια· είναι το όριο πέρα από το οποίο δεν υπάρχουν διαδρομές προς το εξωτερικό Σύμπαν. Το αέριο έξω από αυτό το όριο μπορεί να θερμανθεί καθώς χάνει ενέργεια και στροφορμή. Η ακτινοβολία προέρχεται από το περιβάλλον υλικό, όχι από το εσωτερικό της μαύρης τρύπας."],
+      ["Τι γνωρίζουμε και τι μένει ανοικτό", "Η γενική σχετικότητα περιγράφει με μεγάλη επιτυχία πολλές παρατηρήσεις ισχυρής βαρύτητας. Ωστόσο, η φυσική στο κέντρο μιας κλασικής μαύρης τρύπας απαιτεί μια πληρέστερη θεωρία που να συνδυάζει βαρύτητα και κβαντική φυσική. Η προέλευση των υπερμεγεθών μαύρων τρυπών παραμένει επίσης αντικείμενο έρευνας."],
+      ["Γιατί έχει σημασία", "Οι μαύρες τρύπες είναι φυσικά εργαστήρια για τη μελέτη της βαρύτητας, της ύλης σε ακραίες συνθήκες και της εξέλιξης των γαλαξιών. Οι παρατηρήσεις τους ελέγχουν προβλέψεις της σχετικότητας σε περιβάλλοντα που δεν μπορούμε να αναπαράγουμε στη Γη."]
+    ] : [
+      ["What they are and how they form", "Black holes are regions of spacetime where gravity is so strong that, beyond a boundary called the event horizon, signals cannot escape to a distant observer. Stellar-mass black holes can form when the core of a sufficiently massive star collapses. Supermassive black holes occupy the centres of many galaxies, although their formation pathways remain an active research question."],
+      ["How astronomers study them", "We do not directly see a black hole's interior. Its presence can be inferred from nearby stars and gas, radiation from hot material in an accretion disk, and observations of its shadow. Gravitational-wave detections also reveal mergers involving black holes and neutron stars."],
+      ["Event horizons and accretion disks", "An event horizon is not a solid surface; it is a boundary beyond which paths leading back to the wider universe are no longer possible. Gas outside it can become extremely hot as it loses energy and angular momentum. The observed light comes from surrounding material, not from inside the black hole."],
+      ["Established results and open questions", "General relativity successfully describes many observations in strong-gravity environments. Yet the physics at the centre of a classical black hole calls for a more complete account combining gravity with quantum physics. The origins of supermassive black holes also remain under investigation."],
+      ["Why it matters", "Black holes provide natural laboratories for gravity, matter under extreme conditions, and galaxy evolution. Observations test predictions of relativity in environments that cannot be recreated on Earth."]
+    ];
+  } else if (/planet|solar system|exoplanet|moon|comet|asteroid|mars|jupiter|saturn|venus|mercury|uranus|neptune|astrobiology|life/.test(key)) {
+    sections = isEl ? [
+      ["Ένας πλανήτης ως φυσικός κόσμος", "Οι πλανήτες είναι κόσμοι με διαφορετικές μάζες, εσωτερικές δομές, ατμόσφαιρες και γεωλογικές ιστορίες. Η θερμοκρασία και η εξέλιξή τους εξαρτώνται από την απόσταση από το άστρο τους, τη σύσταση, την ατμόσφαιρα, τη γεωλογική δραστηριότητα και την ιστορία συγκρούσεων."],
+      ["Πώς ανακαλύπτουμε και μετράμε", "Στο Ηλιακό Σύστημα, τροχιακά σκάφη, προσεδαφιστές και ρόβερ μετρούν τη σύσταση, τη βαρύτητα, τα μαγνητικά πεδία και τις επιφανειακές συνθήκες. Για τους εξωπλανήτες, η μέθοδος της διέλευσης ανιχνεύει μικρές μειώσεις στη φωτεινότητα ενός άστρου, ενώ η ακτινική ταχύτητα μετρά την κίνησή του υπό την επίδραση πλανητών."],
+      ["Ατμόσφαιρες, νερό και κατοικησιμότητα", "Η κατοικήσιμη ζώνη είναι μια αρχική εκτίμηση της περιοχής όπου θα μπορούσε να υπάρχει υγρό νερό στην επιφάνεια υπό κατάλληλες συνθήκες. Δεν αποδεικνύει ότι ένας πλανήτης κατοικείται. Η ατμοσφαιρική πίεση και χημεία, η ακτινοβολία του άστρου, η γεωλογία και η διατήρηση του νερού είναι επίσης σημαντικές. Δεν υπάρχει επιβεβαιωμένη απόδειξη ζωής πέρα από τη Γη."],
+      ["Μικρά σώματα και η ιστορία του συστήματος", "Αστεροειδείς, κομήτες και αντικείμενα της ζώνης Kuiper διατηρούν στοιχεία για τις πρώτες εποχές του πλανητικού μας συστήματος. Η σύστασή τους και οι τροχιές τους βοηθούν τους ερευνητές να εξετάσουν πώς συγκεντρώθηκε το υλικό που δημιούργησε πλανήτες και δορυφόρους."],
+      ["Τα επόμενα ερωτήματα", "Μελλοντικές αποστολές και ισχυρότερα τηλεσκόπια θα μελετήσουν πλανητικές ατμόσφαιρες, υπόγειους ωκεανούς και τη χημεία πιθανών κατοικήσιμων περιβαλλόντων. Οι επιστήμονες διακρίνουν προσεκτικά μια ένδειξη από μια επιβεβαιωμένη ανακάλυψη."]
+    ] : [
+      ["A planet as a physical world", "Planets are worlds with different masses, interiors, atmospheres, and geological histories. Their temperatures and evolution depend on distance from their star, composition, atmospheric properties, geological activity, and collision history."],
+      ["How worlds are detected and measured", "Within the Solar System, orbiters, landers, and rovers measure composition, gravity, magnetic fields, and surface conditions. For exoplanets, the transit method detects tiny dips in a star's brightness, while radial-velocity measurements track the star's motion under a planet's gravitational pull."],
+      ["Atmospheres, water, and habitability", "The habitable zone is a first estimate of where liquid surface water might exist under suitable conditions. It does not prove that a planet is inhabited. Atmospheric pressure and chemistry, stellar radiation, geology, and the long-term stability of water also matter. There is currently no confirmed evidence of life beyond Earth."],
+      ["Small bodies and planetary history", "Asteroids, comets, and Kuiper Belt objects preserve clues about the early Solar System. Their compositions and orbits help researchers investigate how material accumulated to form planets and moons."],
+      ["Open questions", "Future missions and more powerful telescopes will study planetary atmospheres, subsurface oceans, and the chemistry of potentially habitable environments. Scientists carefully distinguish a promising clue from a confirmed detection."]
+    ];
+  } else if (/star|stellar|nebula|galax|milky way|cluster|cosmology|dark matter|dark energy|big bang|universe|cosmic/.test(key)) {
+    sections = isEl ? [
+      ["Η κλίμακα του Σύμπαντος", "Το παρατηρήσιμο Σύμπαν περιλαμβάνει γαλαξίες, άστρα, αέριο, σκόνη και ακτινοβολία σε τεράστιες αποστάσεις. Επειδή το φως χρειάζεται χρόνο για να ταξιδέψει, τα μακρινά αντικείμενα τα βλέπουμε όπως ήταν όταν εκπέμφθηκε το φως τους. Η αστρονομία μελετά έτσι και την ιστορία του Σύμπαντος."],
+      ["Άστρα: γέννηση, ζωή και τέλος", "Τα άστρα σχηματίζονται όταν πυκνές περιοχές νεφών αερίου και σκόνης καταρρέουν υπό τη βαρύτητα. Όταν ο πυρήνας αποκτήσει κατάλληλη θερμοκρασία και πίεση, η πυρηνική σύντηξη παράγει ενέργεια. Η μάζα καθορίζει σε μεγάλο βαθμό τη διάρκεια ζωής και το τέλος ενός άστρου: ο Ήλιος αναμένεται να αφήσει λευκό νάνο, ενώ πολύ πιο μεγάλα άστρα μπορούν να καταλήξουν σε υπερκαινοφανείς και συμπαγή κατάλοιπα."],
+      ["Γαλαξίες και κοσμική εξέλιξη", "Οι γαλαξίες είναι συστήματα άστρων, αερίου, σκόνης και σκοτεινής ύλης. Συγκρούσεις και συγχωνεύσεις μπορούν να αλλάξουν το σχήμα τους και να πυροδοτήσουν νέες περιόδους σχηματισμού άστρων. Η μελέτη γαλαξιών σε διαφορετικές αποστάσεις επιτρέπει την ανασύνθεση της εξέλιξής τους."],
+      ["Σκοτεινή ύλη και σκοτεινή ενέργεια", "Οι κινήσεις άστρων και γαλαξιών, καθώς και η βαρυτική κάμψη του φωτός, δείχνουν ότι η ορατή ύλη δεν αρκεί για να εξηγήσει όλη τη βαρύτητα που παρατηρούμε. Αυτό αποτελεί βασικό τεκμήριο υπέρ της σκοτεινής ύλης, της οποίας η μικροσκοπική φύση δεν έχει προσδιοριστεί. Η επιταχυνόμενη κοσμική διαστολή περιγράφεται συχνά με τον όρο σκοτεινή ενέργεια, αλλά η φυσική εξήγησή της παραμένει άγνωστη."],
+      ["Η Μεγάλη Έκρηξη και τα όρια της γνώσης", "Το μοντέλο της Μεγάλης Έκρηξης περιγράφει την εξέλιξη του Σύμπαντος από μια πολύ θερμή και πυκνή πρώιμη κατάσταση. Στηρίζεται, μεταξύ άλλων, στη διαστολή του Σύμπαντος και στην κοσμική μικροκυματική ακτινοβολία υποβάθρου. Δεν ήταν έκρηξη μέσα σε ήδη υπάρχον κενό· περιγράφει τη διαστολή του ίδιου του χώρου. Τα ερωτήματα για τις πρώτες στιγμές παραμένουν ανοιχτά."]
+    ] : [
+      ["The scale of the universe", "The observable universe contains galaxies, stars, gas, dust, and radiation across enormous distances. Because light takes time to travel, distant objects are seen as they were when their light began its journey. Astronomy therefore studies cosmic history as well as the universe's present appearance."],
+      ["Stars: birth, life, and endings", "Stars form when dense regions of gas and dust collapse under gravity. If the core reaches suitable temperatures and pressures, nuclear fusion releases energy. Mass strongly determines a star's lifetime and fate: the Sun is expected to leave a white dwarf, while much more massive stars can end in supernova explosions and compact remnants."],
+      ["Galaxies and cosmic evolution", "Galaxies are systems of stars, gas, dust, and dark matter. Collisions and mergers can reshape them and trigger new episodes of star formation. Studying galaxies at different distances lets astronomers reconstruct how they changed over cosmic time."],
+      ["Dark matter and dark energy", "The motions of stars and galaxies, along with gravitational lensing, indicate that visible matter alone cannot account for all the gravity observed. This is key evidence for dark matter, whose microscopic identity remains unknown. The accelerated expansion of the universe is often described using the term dark energy, but its physical explanation remains unresolved."],
+      ["The Big Bang and limits of knowledge", "The Big Bang model describes the universe's evolution from an early hot, dense state. Evidence includes cosmic expansion and the cosmic microwave background. It was not an explosion into pre-existing empty space; it describes the expansion of space itself. Questions about the earliest moments remain open."]
+    ];
+  } else {
+    sections = isEl ? [
+      ["Το επιστημονικό πλαίσιο", "Η μελέτη του θέματος «" + titleText + "» βασίζεται στη συνδυασμένη χρήση φυσικών μοντέλων, παρατηρήσεων και μετρήσεων. Οι επιστήμονες διατυπώνουν προβλέψεις, τις συγκρίνουν με δεδομένα και αξιολογούν εναλλακτικές εξηγήσεις. Καμία μεμονωμένη εικόνα ή μέτρηση δεν αρκεί πάντοτε για να τεκμηριώσει ένα σύνθετο συμπέρασμα."],
+      ["Παρατήρηση και δεδομένα", "Τα τηλεσκόπια και τα διαστημικά όργανα καταγράφουν φως και άλλα σήματα σε διαφορετικά μήκη κύματος. Η βαθμονόμηση, ο θόρυβος, η ανάλυση και οι αβεβαιότητες επηρεάζουν τα συμπεράσματα. Η σύγκριση ανεξάρτητων οργάνων και μεθόδων αυξάνει την αξιοπιστία."],
+      ["Πώς ελέγχονται οι εξηγήσεις", "Μια επιστημονική εξήγηση πρέπει να συμφωνεί με τα στοιχεία και να οδηγεί σε ελέγξιμες προβλέψεις. Όταν νέα δεδομένα διαφωνούν με το μοντέλο, οι ερευνητές εξετάζουν τις πηγές σφάλματος και τις παραδοχές του. Η αβεβαιότητα σημαίνει ότι η ισχύς κάθε συμπεράσματος πρέπει να αντιστοιχεί στα στοιχεία."],
+      ["Τι γνωρίζουμε και τι όχι", "Η σύγχρονη έρευνα προχωρά με καλύτερες μετρήσεις και ανεξάρτητες επαληθεύσεις. Είναι σημαντικό να ξεχωρίζουμε τα καθιερωμένα αποτελέσματα από τις ενεργές υποθέσεις και την εικασία. Τα ανοικτά ερωτήματα είναι μέρος της επιστήμης."],
+      ["Συμπέρασμα", "Το θέμα «" + titleText + "» συνδέεται με την προσπάθεια της αστρονομίας να εξηγήσει τη φύση και την εξέλιξη του Σύμπαντος. Η πιο αξιόπιστη εικόνα προκύπτει όταν θεωρία, παρατήρηση και ανεξάρτητος έλεγχος συμφωνούν."]
+    ] : [
+      ["Scientific context", "Research on “" + titleText + "” combines physical models, observations, and measurements. Scientists make predictions, compare them with data, and test whether alternative explanations fit. A single image or measurement is not always enough to establish a complex conclusion."],
+      ["Observations and data", "Telescopes and spacecraft instruments record light and other signals across different wavelengths. Calibration, noise, resolution, and uncertainty affect what can be inferred. Comparing independent instruments and methods strengthens confidence."],
+      ["How explanations are tested", "A scientific explanation must fit available evidence and lead to testable predictions. When new data disagree with a model, researchers examine possible errors and assumptions. Uncertainty means confidence should match the evidence."],
+      ["What is known and what remains open", "Research advances through improved measurements and independent checks. It is important to distinguish established findings from active hypotheses and speculation. Open questions are part of science."],
+      ["Conclusion", "The topic “" + titleText + "” forms part of astronomy’s effort to explain the nature and evolution of the universe. The most reliable picture emerges when theory, observation, and independent tests agree."]
+    ];
+  }
+  content.append(category, lead);
+  sections.forEach(([headingText, paragraphText]) => {
+    const heading = document.createElement("h3");
+    heading.textContent = headingText;
+    const paragraph = document.createElement("p");
+    paragraph.textContent = paragraphText;
+    content.append(heading, paragraph);
   });
-
-  content.append(category, lead, overviewTitle, overview, conceptsTitle, concepts,
-    analysisTitle, analysis, methodologyTitle, methodology, sourcesTitle, sourceList);
-  openModal(topicTitle(topic), content);
+  const note = document.createElement("p");
+  note.className = "article-note";
+  note.textContent = isEl
+    ? "Εκπαιδευτικό άρθρο του ASTROCOMB. Τα επιστημονικά συμπεράσματα συνοψίζονται με προσοχή· επιμέρους λεπτομέρειες μπορεί να αλλάζουν καθώς προχωρά η έρευνα."
+    : "ASTROCOMB educational article. Scientific conclusions are summarized cautiously; specific details may change as research progresses.";
+  content.appendChild(note);
+  openModal(titleText, content);
+  modalBackdrop.classList.add("article-mode");
+  document.body.classList.add("article-open");
+  modalBody.scrollTop = 0;
 }
-
 function startQuiz(level) {
   currentQuiz = { level, questions: quizzes[level] };
   questionIndex = 0;
