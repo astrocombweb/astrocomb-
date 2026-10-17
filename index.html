@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#050914">
-<meta name="description" content="Astrocomb — an academic exploration of the universe, astronomy, cosmology and physics.">
-<title>ASTROCOMB — Explore the Universe</title>
+<meta name="description" content="Astro.com — an academic exploration of the universe, astronomy, cosmology and physics.">
+<title>ASTRO.COM — Explore the Universe</title>
 
 <style>
 :root {
@@ -283,6 +283,11 @@ footer small { font: 11px Arial, sans-serif; color: var(--muted); }
 .feedback { min-height: 28px; color: #c8e6ff; }
 .resource-list { display: grid; gap: 12px; margin-top: 18px; }
 .resource-list a { color: #9bcaff; }
+.article-content { font-family: Georgia, "Times New Roman", serif; }
+.article-content h3 { color: #b9d8ff; font-size: 16px; font-weight: normal; letter-spacing: .04em; margin: 24px 0 8px; border-bottom: 1px solid var(--line); padding-bottom: 7px; }
+.article-content > p { line-height: 1.8; }
+.article-content .topic-category { font: 11px Arial, sans-serif; letter-spacing: .12em; color: #9bcaff; }
+.article-content .resource-list > div { line-height: 1.8; }
 @media (min-width: 1500px) {
   .honeycomb { max-width: 1350px; }
 }
@@ -324,7 +329,7 @@ footer small { font: 11px Arial, sans-serif; color: var(--muted); }
 
 <header>
   <button class="menu-button" id="menuToggle" aria-label="Toggle navigation">☰</button>
-  <a class="brand" href="#" aria-label="Astrocomb home">ASTRO<span>COMB</span></a>
+  <a class="brand" href="#" aria-label="Astro.com home">ASTRO<span>.COM</span></a>
   <div class="search-wrap">
     <input id="searchInput" type="search" placeholder="Search scientific subjects..." aria-label="Search subjects">
   </div>
@@ -351,7 +356,7 @@ footer small { font: 11px Arial, sans-serif; color: var(--muted); }
     </section>
     <section class="side-section">
       <h2 class="side-heading" data-i18n="about">ABOUT</h2>
-      <button class="side-link" data-action="about" data-i18n="aboutSite">About Astrocomb</button>
+      <button class="side-link" data-action="about" data-i18n="aboutSite">About Astro.com</button>
       <button class="side-link" data-action="sources" data-i18n="sources">Scientific sources</button>
     </section>
   </aside>
@@ -361,7 +366,7 @@ footer small { font: 11px Arial, sans-serif; color: var(--muted); }
       <div class="emblem" aria-hidden="true">
         <span>✧</span><span>◌</span><span>⌘</span>
       </div>
-      <h1>ASTROCOMB</h1>
+      <h1>ASTRO.COM</h1>
       <p class="tagline" data-i18n="tagline">Everything you need to learn about the universe.</p>
       <p class="hero-note" data-i18n="heroNote">Astronomy · Cosmology · Fundamental Physics</p>
     </section>
@@ -371,8 +376,8 @@ footer small { font: 11px Arial, sans-serif; color: var(--muted); }
     <p id="emptyMessage" class="empty" hidden data-i18n="noResults">No matching subjects were found.</p>
 
     <footer>
-      <div>Modules Mathematical Mistakes</div>
-      <div>All Data was taken from NASA and ESA sources.</div>
+      <div>AI may make mistakes.</div>
+      <div>Educational summaries by Astro.com, informed by cited NASA and ESA resources.</div>
       <small>
         <span data-i18n="footerNote">Educational portal concept. Images and external resources belong to their respective owners.</span>
         <br>
@@ -433,14 +438,15 @@ const translations = {
     explore:"EXPLORE", allTopics:"All topics", easy:"Quiz — Easy",
     medium:"Quiz — Medium", hard:"Quiz — Hard", media:"NASA & ESA MEDIA",
     gallery:"Image galleries", nasaImages:"NASA images", esaImages:"ESA images",
-    about:"ABOUT", aboutSite:"About Astrocomb", sources:"Scientific sources",
+    about:"ABOUT", aboutSite:"About Astro.com", sources:"Scientific sources",
     tagline:"Everything you need to learn about the universe.",
     heroNote:"Astronomy · Cosmology · Fundamental Physics",
     featured:"SCIENTIFIC SUBJECTS", noResults:"No matching subjects were found.",
-    footerNote:"Educational portal concept. Images and external resources belong to their respective owners.",
+    footerNote:"Educational portal. Images and external resources belong to their respective owners.",
+    articleAim:"Article overview", keyConcepts:"Key concepts", interpretation:"Astro.com analysis", sourceNote:"Sources and further reading", methodology:"How to read this article",
     readMore:"Explore topic", category:"Research field", close:"Close",
-    aboutTitle:"About Astrocomb",
-    aboutText:"Astrocomb is an educational concept for exploring astronomy, cosmology and fundamental physics. Each hexagon opens an introductory overview and links to established scientific resources. For research use, consult the linked source material directly.",
+    aboutTitle:"About Astro.com",
+    aboutText:"Astro.com is an educational concept for exploring astronomy, cosmology and fundamental physics. Each hexagon opens an introductory overview and links to established scientific resources. For research use, consult the linked source material directly.",
     sourcesTitle:"Scientific sources",
     sourcesText:"Use the primary sources below to verify facts, read mission documentation and explore scientific imagery.",
     galleryTitle:"NASA & ESA image galleries",
@@ -456,14 +462,15 @@ const translations = {
     explore:"ΕΞΕΡΕΥΝΗΣΗ", allTopics:"Όλα τα θέματα", easy:"Κουίζ — Εύκολο",
     medium:"Κουίζ — Μεσαίο", hard:"Κουίζ — Δύσκολο", media:"ΥΛΙΚΟ NASA & ESA",
     gallery:"Συλλογές εικόνων", nasaImages:"Εικόνες NASA", esaImages:"Εικόνες ESA",
-    about:"ΣΧΕΤΙΚΑ", aboutSite:"Σχετικά με το Astrocomb", sources:"Επιστημονικές πηγές",
+    about:"ΣΧΕΤΙΚΑ", aboutSite:"Σχετικά με το Astro.com", sources:"Επιστημονικές πηγές",
     tagline:"Όλα όσα χρειάζεσαι για να μάθεις για το Σύμπαν.",
     heroNote:"Αστρονομία · Κοσμολογία · Θεμελιώδης Φυσική",
     featured:"ΕΠΙΣΤΗΜΟΝΙΚΑ ΘΕΜΑΤΑ", noResults:"Δεν βρέθηκαν σχετικά θέματα.",
     footerNote:"Εκπαιδευτική πύλη. Οι εικόνες και οι εξωτερικοί πόροι ανήκουν στους αντίστοιχους δημιουργούς.",
+    articleAim:"Επισκόπηση άρθρου", keyConcepts:"Βασικές έννοιες", interpretation:"Ανάλυση Astro.com", sourceNote:"Πηγές και περαιτέρω μελέτη", methodology:"Πώς να διαβάσεις το άρθρο",
     readMore:"Εξερεύνηση θέματος", category:"Επιστημονικό πεδίο", close:"Κλείσιμο",
-    aboutTitle:"Σχετικά με το Astrocomb",
-    aboutText:"Το Astrocomb είναι μια εκπαιδευτική ιδέα για την εξερεύνηση της αστρονομίας, της κοσμολογίας και της θεμελιώδους φυσικής. Κάθε εξάγωνο ανοίγει μια εισαγωγική παρουσίαση και συνδέσμους προς επιστημονικές πηγές. Για ερευνητική χρήση, συμβουλέψου απευθείας τις πρωτογενείς πηγές.",
+    aboutTitle:"Σχετικά με το Astro.com",
+    aboutText:"Το Astro.com είναι μια εκπαιδευτική ιδέα για την εξερεύνηση της αστρονομίας, της κοσμολογίας και της θεμελιώδους φυσικής. Κάθε εξάγωνο ανοίγει μια εισαγωγική παρουσίαση και συνδέσμους προς επιστημονικές πηγές. Για ερευνητική χρήση, συμβουλέψου απευθείας τις πρωτογενείς πηγές.",
     sourcesTitle:"Επιστημονικές πηγές",
     sourcesText:"Χρησιμοποίησε τις πρωτογενείς πηγές για επαλήθευση πληροφοριών, τεκμηρίωση αποστολών και επιστημονικές εικόνες.",
     galleryTitle:"Συλλογές εικόνων NASA & ESA",
@@ -551,21 +558,69 @@ function openModal(title, content) {
 function closeModal() { modalBackdrop.hidden = true; }
 
 function openTopic(topic) {
-  const content = document.createElement("div");
+  const content = document.createElement("article");
+  content.className = "article-content";
+
   const category = document.createElement("p");
+  category.className = "topic-category";
   category.textContent = `${t("category")}: ${topic.category}`;
-  const description = document.createElement("p");
-  description.textContent = language === "el" ? topic.descEL : topic.desc;
-  const resources = document.createElement("div");
-  resources.className = "resource-list";
-  resources.innerHTML = `
-    <a href="https://science.nasa.gov/" target="_blank" rel="noopener noreferrer">NASA Science ↗</a>
-    <a href="https://www.esa.int/Science_Exploration/Space_Science" target="_blank" rel="noopener noreferrer">ESA Space Science ↗</a>`;
-  const note = document.createElement("p");
-  note.textContent = language === "el"
-    ? "Οι σύνδεσμοι οδηγούν σε επίσημες πηγές. Η παρουσίαση είναι εισαγωγική και όχι πλήρες επιστημονικό άρθρο."
-    : "Links lead to official sources. This is an introductory overview, not a fully referenced research article.";
-  content.append(category, description, resources, note);
+
+  const lead = document.createElement("p");
+  lead.textContent = language === "el" ? topic.descEL : topic.desc;
+
+  const overviewTitle = document.createElement("h3");
+  overviewTitle.textContent = t("articleAim");
+  const overview = document.createElement("p");
+  overview.textContent = language === "el"
+    ? `Το θέμα «${topic.el}» εξετάζεται εδώ μέσα από τις βασικές επιστημονικές ιδέες, τις παρατηρήσεις και τα ερωτήματα που καθοδηγούν τη σύγχρονη έρευνα. Η εισαγωγή συνοψίζει το αντικείμενο και λειτουργεί ως αφετηρία για περαιτέρω μελέτη.`
+    : `This article introduces “${topic.en}” through its central scientific ideas, observations and open questions. The overview summarizes the field and provides a starting point for further study.`;
+
+  const conceptsTitle = document.createElement("h3");
+  conceptsTitle.textContent = t("keyConcepts");
+  const concepts = document.createElement("p");
+  concepts.textContent = language === "el"
+    ? "Κεντρικό σημείο είναι η σύνδεση θεωρίας και παρατήρησης: οι επιστήμονες διατυπώνουν μοντέλα, τα συγκρίνουν με δεδομένα τηλεσκοπίων ή διαστημικών αποστολών και αναθεωρούν τα συμπεράσματά τους όταν εμφανίζονται νέα στοιχεία. Οι μετρήσεις έχουν αβεβαιότητες και πρέπει να ερμηνεύονται στο πλαίσιο των μεθόδων που χρησιμοποιήθηκαν."
+    : "A central principle is the connection between theory and observation: researchers build models, compare them with telescope or spacecraft data, and revise conclusions when new evidence appears. Measurements have uncertainties and should be interpreted in the context of the methods used.";
+
+  const analysisTitle = document.createElement("h3");
+  analysisTitle.textContent = t("interpretation");
+  const analysis = document.createElement("p");
+  analysis.textContent = language === "el"
+    ? "Η εκπαιδευτική σύνθεση του Astro.com εστιάζει στο τι γνωρίζουμε από παρατηρήσεις, ποια συμπεράσματα υποστηρίζονται από τα δεδομένα και ποια ερωτήματα παραμένουν ανοικτά. Το κείμενο αποτελεί εισαγωγική ανάλυση και όχι επίσημη δημοσίευση της NASA ή της ESA."
+    : "Astro.com’s educational synthesis distinguishes what observations show, which conclusions are supported by evidence, and which questions remain open. This is an introductory analysis, not an official NASA or ESA publication.";
+
+  const methodologyTitle = document.createElement("h3");
+  methodologyTitle.textContent = t("methodology");
+  const methodology = document.createElement("p");
+  methodology.textContent = language === "el"
+    ? "Για ακαδημαϊκή χρήση, έλεγξε τις πρωτογενείς πηγές παρακάτω, αναζήτησε τις σχετικές δημοσιεύσεις και σημείωσε ημερομηνία πρόσβασης. Οι σύνδεσμοι ανοίγουν μόνο ως βιβλιογραφικές παραπομπές· το άρθρο και η ανάλυση παραμένουν μέσα στο Astro.com."
+    : "For academic use, consult the primary sources below, locate relevant publications, and record the access date. The links are references for further reading; the article and analysis remain within Astro.com.";
+
+  const sourcesTitle = document.createElement("h3");
+  sourcesTitle.textContent = t("sourceNote");
+  const sourceList = document.createElement("div");
+  sourceList.className = "resource-list";
+  const sources = [
+    {label:"NASA Science", url:"https://science.nasa.gov/"},
+    {label:"NASA Image and Video Library", url:"https://images.nasa.gov/"},
+    {label:"ESA Space Science", url:"https://www.esa.int/Science_Exploration/Space_Science"},
+    {label:"ESA Multimedia — Images", url:"https://www.esa.int/ESA_Multimedia/Images"}
+  ];
+  sources.forEach(source => {
+    const row = document.createElement("div");
+    const label = document.createElement("strong");
+    label.textContent = source.label + ": ";
+    const a = document.createElement("a");
+    a.href = source.url;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    a.textContent = language === "el" ? "Πρωτογενής πηγή / περαιτέρω ανάγνωση ↗" : "Primary source / further reading ↗";
+    row.append(label, a);
+    sourceList.appendChild(row);
+  });
+
+  content.append(category, lead, overviewTitle, overview, conceptsTitle, concepts,
+    analysisTitle, analysis, methodologyTitle, methodology, sourcesTitle, sourceList);
   openModal(topicTitle(topic), content);
 }
 
