@@ -673,6 +673,15 @@ function checkImageUrl(url) {
   });
 }
 
+function topicFallbackImage(topic) {
+  const imageId = topic.id === "planet-mercury" || topic.id === "planet-saturn"
+    ? "photo-1534796636912-3b95b3ab5986"
+    : topic.id === "planet-climates" || topic.id === "earth" || topic.id === "planet-earth"
+      ? "photo-1446776811953-b23d57bd21aa"
+      : (topic.image || "photo-1462331940025-496dfbfc7564");
+  return "https://images.unsplash.com/" + imageId + "?auto=format&fit=crop&w=900&q=80";
+}
+
 function renderTopics(filter = "") {
   grid.innerHTML = "";
   const normalized = filter.trim().toLocaleLowerCase(language);
@@ -691,14 +700,18 @@ function renderTopics(filter = "") {
     button.dataset.topicId = topic.id;
     button.setAttribute("aria-label", title);
     button.innerHTML = `
-      <img${topicImageCache.has(topic.id) ? ' src="' + topicImageCache.get(topic.id) + '"' : ""}
-           alt="${title} — NASA space image" loading="lazy" referrerpolicy="no-referrer">
+      <img src="${topicImageCache.get(topic.id) || topicFallbackImage(topic)}"
+           alt="${title} — space image" loading="lazy" referrerpolicy="no-referrer">
       <span class="topic-name"></span>
       <span class="topic-category"></span>`;
     const topicImg = button.querySelector("img");
     topicImg.addEventListener("error", () => {
-      topicImageCache.delete(topic.id);
-      topicImg.removeAttribute("src");
+      if (!topicImg.dataset.fallbackTried) {
+        topicImg.dataset.fallbackTried = "true";
+        topicImageCache.delete(topic.id);
+        topicImg.src = topicFallbackImage(topic);
+        return;
+      }
       topicImg.hidden = true;
     });
     button.querySelector(".topic-name").textContent = title;
