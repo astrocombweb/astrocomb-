@@ -593,9 +593,6 @@ function topicImageQuery(topic) {
   if (group === "stars") return "NASA stars star field stellar evolution supernova";
   return "NASA galaxy spiral galaxy deep field space telescope";
 }
-const usedTopicImages = new Set();
-const topicImageCache = new Map();
-let topicImagesStarted = false;
 const forbiddenImageMetadata = /\b(astronaut|crew member|portrait|selfie|person|people|face|human subject|group photo|family|landscape|mountain|forest|trees|beach|building|cityscape|hiking|camping)\b/i;
 const subjectPatterns = {
   planet: /\b(planet|mars|jupiter|saturn|venus|mercury|uranus|neptune|earth|exoplanet|planetary|worlds)\b/i,
