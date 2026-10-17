@@ -108,31 +108,29 @@ header {
 }
 .brand span { color: var(--blue); }
 .brand-emblem {
-  width: 126px;
-  height: 50px;
-  flex: 0 0 126px;
+  width: 91px;
+  height: 42px;
+  flex: 0 0 91px;
   position: relative;
-  margin-left: -5px;
-  filter: drop-shadow(0 0 9px rgba(93,177,255,.28));
+  margin-left: -8px;
 }
 .brand-emblem span {
   position: absolute;
-  top: 3px;
-  width: 43px;
-  height: 43px;
+  top: 2px;
+  width: 34px;
+  height: 31px;
   overflow: hidden;
-  border-radius: 50%;
-  border: 2px solid #8ccaff;
+  clip-path: polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);
+  border: 1px solid var(--blue);
   background: #081322;
-  box-shadow: 0 0 0 2px rgba(5,9,20,.9), 0 0 16px rgba(120,185,255,.28);
+  box-shadow: 0 0 12px rgba(120,185,255,.2);
 }
 .brand-emblem span:nth-child(1) { left: 0; }
-.brand-emblem span:nth-child(2) { left: 41px; top: 3px; }
-.brand-emblem span:nth-child(3) { left: 82px; top: 3px; }
-.brand-emblem img { width: 100%; height: 100%; display: block; object-fit: cover; }
+.brand-emblem span:nth-child(2) { left: 28px; top: 10px; }
+.brand-emblem span:nth-child(3) { left: 56px; }
 .brand-emblem img { width: 100%; height: 100%; display: block; object-fit: cover; }
 @media (max-width: 760px) {
-  .brand-emblem { width: 104px; flex-basis: 104px; transform: scale(.78); transform-origin: left center; margin-left: -8px; margin-right: -16px; }
+  .brand-emblem { width: 72px; flex-basis: 72px; transform: scale(.82); transform-origin: left center; margin-left: -10px; margin-right: -9px; }
 }
 @media (max-width: 390px) {
   .brand-emblem { display: none; }
@@ -426,9 +424,9 @@ footer small { font: 11px Arial, sans-serif; color: var(--muted); }
   <button class="menu-button" id="menuToggle" aria-label="Toggle navigation">☰</button>
   <a class="brand" href="#" aria-label="Astrocomb home">ASTRO<span>COMB</span></a>
   <div class="brand-emblem" aria-label="Saturn, black hole and galaxy">
-    <span class="logo-saturn"><img alt="Saturn — NASA image" loading="lazy"></span>
-    <span class="logo-black-hole"><img alt="Black hole — NASA image" loading="lazy"></span>
-    <span class="logo-galaxy"><img alt="Galaxy — NASA image" loading="lazy"></span>
+    <span class="logo-saturn"><img src="https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?auto=format&fit=crop&w=300&q=85" alt="Saturn and its rings" loading="eager"></span>
+    <span class="logo-black-hole"><img src="https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?auto=format&fit=crop&w=300&q=85" alt="Black hole and space" loading="eager"></span>
+    <span class="logo-galaxy"><img src="https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&w=300&q=85" alt="Spiral galaxy" loading="eager"></span>
   </div>
   <div class="search-wrap">
     <input id="searchInput" type="search" placeholder="Search scientific subjects..." aria-label="Search subjects">
@@ -464,9 +462,9 @@ footer small { font: 11px Arial, sans-serif; color: var(--muted); }
   <main>
     <section class="hero">
       <div class="emblem" aria-label="Astrocomb emblem: Saturn, the Milky Way, and a black hole">
-        <span><img alt="Saturn — NASA image" loading="lazy"></span>
-        <span><img alt="Galaxy — NASA image" loading="lazy"></span>
-        <span><img alt="Black hole — NASA image" loading="lazy"></span>
+        <span><img src="https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?auto=format&fit=crop&w=300&q=85" alt="Saturn and its rings" loading="eager"></span>
+        <span><img src="https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&w=300&q=85" alt="Galaxy" loading="eager"></span>
+        <span><img src="https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?auto=format&fit=crop&w=300&q=85" alt="Black hole and space" loading="eager"></span>
       </div>
       <h1>ASTROCOMB</h1>
       <p class="tagline" data-i18n="tagline">Everything you need to learn about the universe.</p>
@@ -637,6 +635,7 @@ let topicImagesStarted = false;
 // NASA-only image pipeline. Every topic is assigned to one permitted space subject.
 function topicImageGroup(topic) {
   const key = (topic.id + " " + topic.en + " " + topic.el + " " + topic.category).toLowerCase();
+  if (topic.id === "small-bodies") return "stars";
   if (/black hole|neutron star|gravitational wave|relativistic|quasar|active galactic nuclei|space.?time|relativity/.test(key)) return "blackhole";
   if (/planet-|planet|solar system|exoplanet|earth as a planet|astrobiology|asteroid|comet|moon/.test(key)) return "planet";
   if (/nebula|star cluster/.test(key)) return "nebula";
