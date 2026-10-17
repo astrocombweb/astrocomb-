@@ -423,10 +423,10 @@ footer small { font: 11px Arial, sans-serif; color: var(--muted); }
 <header>
   <button class="menu-button" id="menuToggle" aria-label="Toggle navigation">☰</button>
   <a class="brand" href="#" aria-label="Astrocomb home">ASTRO<span>COMB</span></a>
-  <div class="brand-emblem" aria-label="Saturn, galaxy and black hole">
-    <span><img alt="Saturn — NASA image" loading="lazy"></span>
-    <span><img alt="Galaxy — NASA image" loading="lazy"></span>
-    <span><img alt="Black hole — NASA image" loading="lazy"></span>
+  <div class="brand-emblem" aria-label="Saturn, black hole and galaxy">
+    <span class="logo-saturn"><img alt="Saturn — NASA image" loading="lazy"></span>
+    <span class="logo-black-hole"><img alt="Black hole — NASA image" loading="lazy"></span>
+    <span class="logo-galaxy"><img alt="Galaxy — NASA image" loading="lazy"></span>
   </div>
   <div class="search-wrap">
     <input id="searchInput" type="search" placeholder="Search scientific subjects..." aria-label="Search subjects">
@@ -712,13 +712,13 @@ async function loadTopicImages() {
 }
 async function loadEmblemSaturn() {
   const queries = [
-    {selector: "span:nth-child(1) img", topic: {id:"emblem-saturn",en:"Saturn planet",el:"Κρόνος",category:"Planetary Science"}},
-    {selector: "span:nth-child(2) img", topic: {id:"emblem-galaxy",en:"spiral galaxy",el:"σπειροειδής γαλαξίας",category:"Galactic Astronomy"}},
-    {selector: "span:nth-child(3) img", topic: {id:"emblem-blackhole",en:"black hole",el:"μαύρη τρύπα",category:"Relativistic Astrophysics"}}
+    {heroSelector: ".emblem span:nth-child(1) img", logoSelector: ".brand-emblem .logo-saturn img", topic: {id:"emblem-saturn",en:"Saturn planet",el:"Κρόνος",category:"Planetary Science"}},
+    {heroSelector: ".emblem span:nth-child(2) img", logoSelector: ".brand-emblem .logo-galaxy img", topic: {id:"emblem-galaxy",en:"spiral galaxy",el:"σπειροειδής γαλαξίας",category:"Galactic Astronomy"}},
+    {heroSelector: ".emblem span:nth-child(3) img", logoSelector: ".brand-emblem .logo-black-hole img", topic: {id:"emblem-blackhole",en:"black hole",el:"μαύρη τρύπα",category:"Relativistic Astrophysics"}}
   ];
   const excluded = new Set(usedTopicImages);
   for (const item of queries) {
-    const images = document.querySelectorAll(".emblem " + item.selector + ", .brand-emblem " + item.selector);
+    const images = document.querySelectorAll(item.heroSelector + ", " + item.logoSelector);
     const candidate = await findNasaImage(item.topic, excluded);
     if (candidate) {
       images.forEach(image => {
