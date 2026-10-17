@@ -568,53 +568,40 @@ let topicImagesStarted = false;
 // Distinct temporary fallbacks keep the grid from repeating the same photo
 // while the unique NASA search results are loading.
 const topicFallbackImages = [
-  "photo-1462331940025-496dfbfc7564",
-  "photo-1446776811953-b23d57bd21aa",
-  "photo-1614730321146-b6fa6a46bcb4",
-  "photo-1419242902214-272b3f66ee7a",
-  "photo-1614728263952-84ea256f9679",
-  "photo-1517976487492-5750f3195933",
-  "photo-1635070041078-e363dbe005cb",
-  "photo-1451187580459-43490279c0fa",
-  "photo-1464802686167-b939a6910659",
-  "photo-1534796636912-3b95b3ab5986",
-  "photo-1506318137071-a8e063b4bec0",
-  "photo-1447433819943-74a20887a81e",
-  "photo-1464822759023-fed622ff2c3b",
-  "photo-1516339901601-2e1b62dc0c45",
-  "photo-1534447677768-be436bb09401",
-  "photo-1484589065579-248aad0d8b13",
-  "photo-1519681393784-d120267933ba",
-  "photo-1475274047050-1d0c0975c63e",
-  "photo-1500530855697-b586d89ba3ee",
-  "photo-1470071459604-3b5ec3a7fe05",
-  "photo-1519608487953-e999c86e7455",
-  "photo-1502134249126-9f3755a50d78",
-  "photo-1518837695005-2083093ee35b",
-  "photo-1500534623283-312aade485b7",
-  "photo-1497250681960-ef046c08a56e",
-  "photo-1531366488353-0d6b6d4d8f2b",
-  "photo-1511497584788-876760111969",
-  "photo-1470770841072-f978cf4d019e",
-  "photo-1500534314209-a25e0f4c2a1f",
-  "photo-1490730141103-6cac27aaab94",
-  "photo-1507525428034-b723cf961d3e",
-  "photo-1501785888041-af3ef285b470",
-  "photo-1469474968028-56623f02e42e",
-  "photo-1470252649378-9c29740c9fa8",
-  "photo-1473448912268-2022ce9509d8",
-  "photo-1476231682828-37e571bc172f",
-  "photo-1518709268805-4e9042af9f23",
-  "photo-1527489377706-5bf97e608852",
-  "photo-1523712999610-f77fbcfc3843"
+  "photo-1462331940025-496dfbfc7564", // galaxy / nebula
+  "photo-1614730321146-b6fa6a46bcb4", // planet
+  "photo-1534447677768-be436bb09401", // deep space / black-hole theme
+  "photo-1419242902214-272b3f66ee7a"  // stars
 ];
-// Keep fallback imagery unique across every topic, including topics added later.
-const assignedFallbacks = new Set();
+// Restrict every topic image to one of four permitted astronomical subjects.
+function topicImageGroup(topic) {
+  const key = (topic.id + " " + topic.en + " " + topic.el).toLowerCase();
+  if (/planet-|solar system|planet|exoplanet|earth as a planet|astrobiology|life|asteroid|comet|moon/.test(key)) return "planet";
+  if (/black hole|neutron star|gravitational wave|relativity|space.?time|active galactic nuclei|quasar/.test(key)) return "blackhole";
+  if (/star|stellar|sun|nebula|pulsar/.test(key)) return "stars";
+  return "galaxy";
+}
+const topicGroupFallback = {
+  galaxy: topicFallbackImages[0],
+  planet: topicFallbackImages[1],
+  blackhole: topicFallbackImages[2],
+  stars: topicFallbackImages[3]
+};
 topics.forEach(topic => {
-  if (!topic.image || assignedFallbacks.has(topic.image)) {
-    topic.image = topicFallbackImages.find(image => !assignedFallbacks.has(image));
+  const group = topicImageGroup(topic);
+  topic.image = topicGroupFallback[group];
+  if (group === "planet" && /^planet-/.test(topic.id)) {
+    const planetName = topic.en.split(" ")[0];
+    topic.imageQuery = "NASA " + planetName + " planet full disk surface";
+  } else if (group === "planet") {
+    topic.imageQuery = "NASA planet full disk planetary world";
+  } else if (group === "blackhole") {
+    topic.imageQuery = "NASA black hole accretion disk black hole";
+  } else if (group === "stars") {
+    topic.imageQuery = "NASA stars star field stellar";
+  } else {
+    topic.imageQuery = "NASA galaxy galaxies spiral galaxy deep field";
   }
-  if (topic.image) assignedFallbacks.add(topic.image);
 });
 
 function checkImageUrl(url) {
@@ -760,7 +747,8 @@ function openTopic(topic) {
       }
     });
   }
-  content.append(category, lead, heroImage, imageCaption);
+  // Topic subpages intentionally show text only; images stay on the topic tiles.
+  content.append(category, lead);
   const key = (topic.id + " " + topic.en + " " + topic.el + " " + topic.category).toLowerCase();
   let sections;
   if (/black hole|neutron star|pulsar|quasar|gravitational wave|relativistic/.test(key)) {
