@@ -39,7 +39,7 @@ button:focus-visible, input:focus-visible, a:focus-visible {
   background:
     linear-gradient(90deg, rgba(3,7,15,.95), rgba(3,7,15,.45) 35%, rgba(3,7,15,.28)),
     linear-gradient(0deg, rgba(3,7,15,.65), transparent 65%),
-    url("https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&w=2400&q=85")
+    radial-gradient(ellipse at 50% 0%, #102447 0%, #050914 68%)
     center / cover no-repeat;
 }
 .space-background::after {
@@ -397,9 +397,9 @@ footer small { font: 11px Arial, sans-serif; color: var(--muted); }
   <main>
     <section class="hero">
       <div class="emblem" aria-label="Astrocomb emblem: Saturn, the Milky Way, and a black hole">
-        <span><img src="https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?auto=format&fit=crop&w=300&q=80" alt="Saturn with rings" data-emblem-query="Saturn rings"></span>
-        <span><img src="https://www.esa.int/var/esa/storage/images/esa_multimedia/images/2023/12/top-down_view_of_the_milky_way/25373078-1-eng-GB/Top-down_view_of_the_Milky_Way.jpg" alt="The Milky Way" loading="lazy"></span>
-        <span><img src="https://www.esa.int/var/esa/storage/images/esa_multimedia/images/2025/12/artist_s_impression_of_the_flaring_windy_black_hole_in_ngc_3783/27008009-1-eng-GB/Artist_s_impression_of_the_flaring_windy_black_hole_in_NGC_3783_pillars.jpg" alt="Black hole and accretion disc" loading="lazy"></span>
+        <span><img alt="Saturn — NASA image" loading="lazy"></span>
+        <span><img alt="Galaxy — NASA image" loading="lazy"></span>
+        <span><img alt="Black hole — NASA image" loading="lazy"></span>
       </div>
       <h1>ASTROCOMB</h1>
       <p class="tagline" data-i18n="tagline">Everything you need to learn about the universe.</p>
@@ -567,42 +567,101 @@ const usedTopicImages = new Set();
 let topicImagesStarted = false;
 // Distinct temporary fallbacks keep the grid from repeating the same photo
 // while the unique NASA search results are loading.
-const topicFallbackImages = [
-  "photo-1462331940025-496dfbfc7564", // galaxy / nebula
-  "photo-1614730321146-b6fa6a46bcb4", // planet
-  "photo-1534447677768-be436bb09401", // deep space / black-hole theme
-  "photo-1419242902214-272b3f66ee7a"  // stars
-];
-// Restrict every topic image to one of four permitted astronomical subjects.
+// NASA-only image pipeline. Every topic is assigned to one permitted space subject.
 function topicImageGroup(topic) {
-  const key = (topic.id + " " + topic.en + " " + topic.el).toLowerCase();
-  if (/planet-|solar system|planet|exoplanet|earth as a planet|astrobiology|life|asteroid|comet|moon/.test(key)) return "planet";
-  if (/black hole|neutron star|gravitational wave|relativity|space.?time|active galactic nuclei|quasar/.test(key)) return "blackhole";
-  if (/star|stellar|sun|nebula|pulsar/.test(key)) return "stars";
+  const key = (topic.id + " " + topic.en + " " + topic.el + " " + topic.category).toLowerCase();
+  if (/black hole|neutron star|gravitational wave|relativistic|quasar|active galactic nuclei|space.?time|relativity/.test(key)) return "blackhole";
+  if (/planet-|planet|solar system|exoplanet|earth as a planet|astrobiology|asteroid|comet|moon/.test(key)) return "planet";
+  if (/nebula|star cluster/.test(key)) return "nebula";
+  if (/star|stellar|sun|pulsar|supernova/.test(key)) return "stars";
+  if (/galax|cosmolog|dark matter|dark energy|cosmic background|universe/.test(key)) return "galaxy";
   return "galaxy";
 }
-const topicGroupFallback = {
-  galaxy: topicFallbackImages[0],
-  planet: topicFallbackImages[1],
-  blackhole: topicFallbackImages[2],
-  stars: topicFallbackImages[3]
-};
-topics.forEach(topic => {
+function topicImageQuery(topic) {
   const group = topicImageGroup(topic);
-  topic.image = topicGroupFallback[group];
-  if (group === "planet" && /^planet-/.test(topic.id)) {
-    const planetName = topic.en.split(" ")[0];
-    topic.imageQuery = "NASA " + planetName + " planet full disk surface";
-  } else if (group === "planet") {
-    topic.imageQuery = "NASA planet full disk planetary world";
-  } else if (group === "blackhole") {
-    topic.imageQuery = "NASA black hole accretion disk black hole";
-  } else if (group === "stars") {
-    topic.imageQuery = "NASA stars star field stellar";
-  } else {
-    topic.imageQuery = "NASA galaxy galaxies spiral galaxy deep field";
+  if (group === "planet") {
+    const planetNames = ["Mercury","Venus","Earth","Mars","Jupiter","Saturn","Uranus","Neptune"];
+    const exact = planetNames.find(name => topic.id === "planet-" + name.toLowerCase());
+    if (exact) return "NASA " + exact + " planet disk from space";
+    return /exoplanet|other-planetary/.test(topic.id + " " + topic.en) ? "NASA exoplanet planetary system planet illustration" : "NASA planet planetary world from space";
   }
-});
+  if (group === "blackhole") return "NASA black hole accretion disk event horizon";
+  if (group === "nebula") return "NASA nebula star forming region space telescope";
+  if (group === "stars") return "NASA stars star field stellar evolution supernova";
+  return "NASA galaxy spiral galaxy deep field space telescope";
+}
+const usedTopicImages = new Set();
+const topicImageCache = new Map();
+let topicImagesStarted = false;
+const forbiddenImageMetadata = /\b(astronaut|crew member|portrait|selfie|person|people|face|human subject|group photo|family|landscape|mountain|forest|trees|beach|building|cityscape|hiking|camping)\b/i;
+const subjectPatterns = {
+  planet: /\b(planet|mars|jupiter|saturn|venus|mercury|uranus|neptune|earth|exoplanet|planetary|worlds)\b/i,
+  blackhole: /\b(black hole|black-hole|accretion disk|event horizon|quasar|neutron star)\b/i,
+  nebula: /\b(nebula|nebulae|star-forming|stellar nursery|emission nebula)\b/i,
+  stars: /\b(star|stars|stellar|supernova|pulsar|sun)\b/i,
+  galaxy: /\b(galax|deep field|cosmolog|quasar|universe)\b/i
+};
+async function findNasaImage(topic, excluded = usedTopicImages) {
+  const group = topicImageGroup(topic);
+  const query = topicImageQuery(topic);
+  const variants = [...new Set([query, "NASA " + group + " space telescope image", "NASA " + group + " astronomy"])];
+  for (const variant of variants) {
+    try {
+      const response = await fetch("https://images-api.nasa.gov/search?q=" + encodeURIComponent(variant) + "&media_type=image&page_size=100");
+      if (!response.ok) continue;
+      const data = await response.json();
+      const items = data.collection && data.collection.items ? data.collection.items : [];
+      const candidates = items.map(item => {
+        const meta = item.data && item.data[0] ? item.data[0] : {};
+        const metadata = ((meta.title || "") + " " + (meta.description || "") + " " + (meta.keywords || []).join(" ")).trim();
+        const link = (item.links || []).find(entry => entry.render === "image" && /^https:\/\/images-assets\.nasa\.gov\//i.test(entry.href || ""));
+        return {url: link && link.href, metadata, title: meta.title || "", subjectMatch: subjectPatterns[group].test(metadata)};
+      }).filter(item => item.url && item.subjectMatch && !excluded.has(item.url) && !forbiddenImageMetadata.test(item.metadata));
+      for (const candidate of candidates) {
+        if (await checkImageUrl(candidate.url)) return candidate;
+      }
+    } catch (error) {
+      console.warn("NASA image search failed:", error);
+    }
+  }
+  return null;
+}
+async function loadTopicImages() {
+  if (topicImagesStarted) return;
+  topicImagesStarted = true;
+  for (const topic of topics) {
+    const candidate = await findNasaImage(topic, usedTopicImages);
+    if (!candidate) continue;
+    usedTopicImages.add(candidate.url);
+    topicImageCache.set(topic.id, candidate.url);
+    const button = grid.querySelector('[data-topic-id="' + topic.id + '"]');
+    const img = button && button.querySelector("img");
+    if (img) {
+      img.src = candidate.url;
+      img.alt = (language === "el" ? topic.el : topic.en) + " — NASA image";
+      img.dataset.source = "NASA";
+    }
+  }
+}
+async function loadEmblemSaturn() {
+  const queries = [
+    {selector: ".emblem span:nth-child(1) img", topic: {id:"emblem-saturn",en:"Saturn planet",el:"Κρόνος",category:"Planetary Science"}},
+    {selector: ".emblem span:nth-child(2) img", topic: {id:"emblem-galaxy",en:"spiral galaxy",el:"σπειροειδής γαλαξίας",category:"Galactic Astronomy"}},
+    {selector: ".emblem span:nth-child(3) img", topic: {id:"emblem-blackhole",en:"black hole",el:"μαύρη τρύπα",category:"Relativistic Astrophysics"}}
+  ];
+  const excluded = new Set(usedTopicImages);
+  for (const item of queries) {
+    const image = document.querySelector(item.selector);
+    const candidate = await findNasaImage(item.topic, excluded);
+    if (candidate && image) {
+      image.src = candidate.url;
+      image.alt = item.topic.en + " — NASA image";
+      excluded.add(candidate.url);
+    } else if (image) {
+      image.hidden = true;
+    }
+  }
+}
 
 function checkImageUrl(url) {
   return new Promise(resolve => {
@@ -684,17 +743,15 @@ function renderTopics(filter = "") {
     button.dataset.topicId = topic.id;
     button.setAttribute("aria-label", title);
     button.innerHTML = `
-      <img src="${topicImageCache.get(topic.id) || "https://images.unsplash.com/" + (topic.image || topicFallbackImages[topics.indexOf(topic) % topicFallbackImages.length]) + "?auto=format&fit=crop&w=450&q=75"}"
-           alt="${title} — space image" loading="lazy" referrerpolicy="no-referrer">
+      <img src="${topicImageCache.get(topic.id) || ""}"
+           alt="${title} — NASA space image" loading="lazy" referrerpolicy="no-referrer">
       <span class="topic-name"></span>
       <span class="topic-category"></span>`;
     const topicImg = button.querySelector("img");
     topicImg.addEventListener("error", () => {
-      if (topicImg.dataset.fallbackUsed === "true") return;
-      topicImg.dataset.fallbackUsed = "true";
       topicImageCache.delete(topic.id);
-      topicImg.dataset.source = "fallback";
-      topicImg.src = "https://images.unsplash.com/" + (topic.image || topicFallbackImages[topics.indexOf(topic) % topicFallbackImages.length]) + "?auto=format&fit=crop&w=900&q=85";
+      topicImg.removeAttribute("src");
+      topicImg.hidden = true;
     });
     button.querySelector(".topic-name").textContent = title;
     button.querySelector(".topic-category").textContent = category;
@@ -727,28 +784,31 @@ function openTopic(topic) {
   const titleText = isEl ? topic.el : topic.en;
   const heroImage = document.createElement("img");
   heroImage.className = "article-hero-image";
-  heroImage.alt = titleText + (isEl ? " — σχετική εικόνα NASA" : " — related NASA image");
+  heroImage.alt = titleText + (isEl ? " — εικόνα από το αρχείο NASA" : " — NASA space image");
   heroImage.loading = "lazy";
-  heroImage.addEventListener("error", () => {
-    const fallback = "https://images.unsplash.com/" + (topic.image || topicFallbackImages[topics.indexOf(topic) % topicFallbackImages.length]) + "?auto=format&fit=crop&w=1200&q=85";
-    if (heroImage.src !== fallback) heroImage.src = fallback;
-  });
   const cachedImage = topicImageCache.get(topic.id);
-  const tileImage = grid.querySelector('[data-topic-id="' + topic.id + '"] img');
-  heroImage.src = cachedImage || (tileImage ? tileImage.src : "");
-  const imageCaption = document.createElement("p");
-  imageCaption.className = "article-image-caption";
-  imageCaption.textContent = isEl ? "Σχετική εικόνα από το αρχείο εικόνων της NASA" : "Related image from NASA's image archive";
+  if (cachedImage) heroImage.src = cachedImage;
+  heroImage.addEventListener("error", () => {
+    heroImage.removeAttribute("src");
+    heroImage.hidden = true;
+  });
+  content.append(category, lead, heroImage);
   if (!cachedImage) {
-    findNasaImage(topic.imageQuery || topic.en, usedTopicImages).then(url => {
-      if (url && modalBody.contains(content)) {
-        heroImage.src = url;
-        heroImage.alt = titleText + (isEl ? " — σχετική εικόνα NASA" : " — related NASA image");
+    findNasaImage(topic, usedTopicImages).then(candidate => {
+      if (candidate && modalBody.contains(content)) {
+        usedTopicImages.add(candidate.url);
+        topicImageCache.set(topic.id, candidate.url);
+        heroImage.src = candidate.url;
+        const tileImage = grid.querySelector('[data-topic-id="' + topic.id + '"] img');
+        if (tileImage) {
+          tileImage.src = candidate.url;
+          tileImage.hidden = false;
+        }
+      } else if (!candidate && modalBody.contains(content)) {
+        heroImage.hidden = true;
       }
     });
   }
-  // Topic subpages intentionally show text only; images stay on the topic tiles.
-  content.append(category, lead);
   const key = (topic.id + " " + topic.en + " " + topic.el + " " + topic.category).toLowerCase();
   let sections;
   if (/black hole|neutron star|pulsar|quasar|gravitational wave|relativistic/.test(key)) {
