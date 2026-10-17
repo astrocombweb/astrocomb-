@@ -150,6 +150,9 @@ main { min-width: 0; flex: 1; padding: 32px clamp(14px, 3vw, 44px) 0; }
 .emblem span:nth-child(1) { left: 20px; top: 0; }
 .emblem span:nth-child(2) { left: 0; top: 27px; }
 .emblem span:nth-child(3) { left: 40px; top: 27px; }
+.emblem span { overflow: hidden; padding: 0; border-radius: 0; }
+.emblem span img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.emblem span:nth-child(1) img { object-position: center; }
 h1 {
   font-size: clamp(32px, 4vw, 53px);
   font-weight: normal;
@@ -378,8 +381,10 @@ footer small { font: 11px Arial, sans-serif; color: var(--muted); }
 
   <main>
     <section class="hero">
-      <div class="emblem" aria-hidden="true">
-        <span>✧</span><span>◌</span><span>⌘</span>
+      <div class="emblem" aria-label="Astrocomb emblem: Saturn, the Milky Way, and a black hole">
+        <span><img src="https://images-api.nasa.gov/search?q=Saturn%20rings&media_type=image" alt="Saturn with rings" data-emblem-query="Saturn rings"></span>
+        <span><img src="https://www.esa.int/var/esa/storage/images/esa_multimedia/images/2023/12/top-down_view_of_the_milky_way/25373078-1-eng-GB/Top-down_view_of_the_Milky_Way.jpg" alt="The Milky Way" loading="lazy"></span>
+        <span><img src="https://www.esa.int/var/esa/storage/images/esa_multimedia/images/2025/12/artist_s_impression_of_the_flaring_windy_black_hole_in_ngc_3783/27008009-1-eng-GB/Artist_s_impression_of_the_flaring_windy_black_hole_in_NGC_3783_pillars.jpg" alt="Black hole and accretion disc" loading="lazy"></span>
       </div>
       <h1>ASTROCOMB</h1>
       <p class="tagline" data-i18n="tagline">Everything you need to learn about the universe.</p>
@@ -533,6 +538,56 @@ const sidebar = document.getElementById("sidebar");
 function t(key) { return translations[language][key] || key; }
 function topicTitle(topic) { return language === "el" ? topic.el : topic.en; }
 
+const topicImageCache = new Map();
+const usedTopicImages = new Set();
+let topicImagesStarted = false;
+
+async function findNasaImage(query, excluded = new Set()) {
+  try {
+    const response = await fetch("https://images-api.nasa.gov/search?q=" + encodeURIComponent(query) + "&media_type=image");
+    if (!response.ok) return null;
+    const data = await response.json();
+    const items = data.collection && data.collection.items ? data.collection.items : [];
+    for (const item of items) {
+      const href = item.links && item.links.find(link => link.render === "image")?.href;
+      if (href && !excluded.has(href) && /images\.nasa\.gov/.test(href)) return href;
+    }
+  } catch (error) {
+    console.warn("NASA image search unavailable for:", query);
+  }
+  return null;
+}
+
+async function loadTopicImages() {
+  if (topicImagesStarted) return;
+  topicImagesStarted = true;
+  const queue = [...topics];
+  const workers = Array.from({length: 5}, async () => {
+    while (queue.length) {
+      const topic = queue.shift();
+      const imageUrl = await findNasaImage(topic.en, usedTopicImages);
+      if (!imageUrl) continue;
+      usedTopicImages.add(imageUrl);
+      topicImageCache.set(topic.id, imageUrl);
+      const button = grid.querySelector('[data-topic-id="' + topic.id + '"]');
+      const img = button && button.querySelector("img");
+      if (img) {
+        img.src = imageUrl;
+        img.alt = (language === "el" ? topic.el : topic.en) + " — NASA image";
+        img.dataset.source = "NASA";
+      }
+    }
+  });
+  await Promise.all(workers);
+}
+
+function loadEmblemSaturn() {
+  findNasaImage("Saturn planet rings Cassini").then(url => {
+    const image = document.querySelector(".emblem span:nth-child(1) img");
+    if (url && image) image.src = url;
+  });
+}
+
 function renderTopics(filter = "") {
   grid.innerHTML = "";
   const normalized = filter.trim().toLocaleLowerCase(language);
@@ -548,10 +603,11 @@ function renderTopics(filter = "") {
     const button = document.createElement("button");
     button.className = "topic";
     button.type = "button";
+    button.dataset.topicId = topic.id;
     button.setAttribute("aria-label", title);
     button.innerHTML = `
-      <img src="https://images.unsplash.com/${topic.image}?auto=format&fit=crop&w=450&q=75"
-           alt="" loading="lazy">
+      <img src="${topicImageCache.get(topic.id) || "https://images-api.nasa.gov/search?q=" + encodeURIComponent(topic.en) + "&media_type=image"}"
+           alt="${title} — NASA image" loading="lazy" referrerpolicy="no-referrer">
       <span class="topic-name"></span>
       <span class="topic-category"></span>`;
     button.querySelector(".topic-name").textContent = title;
@@ -829,6 +885,8 @@ document.getElementById("langEN").addEventListener("click", () => setLanguage("e
 document.getElementById("langEL").addEventListener("click", () => setLanguage("el"));
 
 renderTopics();
+loadTopicImages();
+loadEmblemSaturn();
 if (window.innerWidth <= 760) sidebar.classList.add("closed");
 </script>
 </body>
