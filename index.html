@@ -593,19 +593,60 @@ function openTopic(topic) {
   methodologyTitle.textContent = t("methodology");
   const methodology = document.createElement("p");
   methodology.textContent = language === "el"
-    ? "Για ακαδημαϊκή χρήση, έλεγξε τις πρωτογενείς πηγές παρακάτω, αναζήτησε τις σχετικές δημοσιεύσεις και σημείωσε ημερομηνία πρόσβασης. Οι σύνδεσμοι ανοίγουν μόνο ως βιβλιογραφικές παραπομπές· το άρθρο και η ανάλυση παραμένουν μέσα στο Astrocomb."
-    : "For academic use, consult the primary sources below, locate relevant publications, and record the access date. The links are references for further reading; the article and analysis remain within Astrocomb.";
+    ? "Οι παρακάτω σύνδεσμοι είναι επίσημες πύλες αναφοράς επιλεγμένες με βάση το θέμα. Δεν αποτελούν από μόνοι τους τεκμηρίωση κάθε επιμέρους πρότασης. Για ακαδημαϊκή χρήση, άνοιξε την πρωτογενή σελίδα και τις δημοσιεύσεις που παραθέτει και έλεγξε ημερομηνίες και μεθόδους."
+    : "The links below are official reference portals selected to match the topic. They do not, by themselves, substantiate every individual statement. For academic use, consult the original pages and publications they cite, and check dates and methods.";
 
   const sourcesTitle = document.createElement("h3");
   sourcesTitle.textContent = t("sourceNote");
   const sourceList = document.createElement("div");
   sourceList.className = "resource-list";
-  const sources = [
-    {label:"NASA Science", url:"https://science.nasa.gov/"},
-    {label:"NASA Image and Video Library", url:"https://images.nasa.gov/"},
-    {label:"ESA Space Science", url:"https://www.esa.int/Science_Exploration/Space_Science"},
-    {label:"ESA Multimedia — Images", url:"https://www.esa.int/ESA_Multimedia/Images"}
+  // Curated official starting points. These are topic-relevant reference pages,
+  // not a claim that every sentence in this educational overview appears there.
+  const sourceMap = [
+    {match:/black hole|neutron star|relativistic|gravity|relativity|gravitational wave/i, sources:[
+      {label:"NASA Science — Black Holes",url:"https://science.nasa.gov/universe/black-holes/"},
+      {label:"NASA Astrophysics",url:"https://science.nasa.gov/astrophysics/"},
+      {label:"ESA Space Science",url:"https://www.esa.int/Science_Exploration/Space_Science"}
+    ]},
+    {match:/dark matter|dark energy|cosmology|big bang|early universe|cosmic|galax/i, sources:[
+      {label:"NASA Science — Universe",url:"https://science.nasa.gov/universe/"},
+      {label:"NASA Science — Galaxies",url:"https://science.nasa.gov/universe/galaxies/"},
+      {label:"ESA Space Science",url:"https://www.esa.int/Science_Exploration/Space_Science"}
+    ]},
+    {match:/exoplanet|planetary|solar system|planet|moon|comet|asteroid|mars|venus|mercury|jupiter|saturn|uranus|neptune/i, sources:[
+      {label:"NASA Science — Solar System",url:"https://science.nasa.gov/solar-system/"},
+      {label:"NASA Exoplanets",url:"https://science.nasa.gov/exoplanets/"},
+      {label:"ESA Space Science",url:"https://www.esa.int/Science_Exploration/Space_Science"}
+    ]},
+    {match:/star|stellar|nebula|supernova|pulsar|white dwarf|brown dwarf|cluster/i, sources:[
+      {label:"NASA Science — Stars",url:"https://science.nasa.gov/universe/stars/"},
+      {label:"NASA Astrophysics",url:"https://science.nasa.gov/astrophysics/"},
+      {label:"ESA Gaia mission science",url:"https://www.cosmos.esa.int/web/gaia/science"}
+    ]},
+    {match:/telescope|observator|astronomical method|light|spectrum|infrared|radio|x-ray|gamma ray/i, sources:[
+      {label:"NASA Science — Universe exploration",url:"https://science.nasa.gov/universe/"},
+      {label:"NASA Hubble science themes",url:"https://science.nasa.gov/mission/hubble/science/science-themes/"},
+      {label:"ESA Space Science",url:"https://www.esa.int/Science_Exploration/Space_Science"}
+    ]},
+    {match:/quantum|particle|physics|mechanic|force|matter|energy|space-time/i, sources:[
+      {label:"NASA Astrophysics",url:"https://science.nasa.gov/astrophysics/"},
+      {label:"NASA Science — Universe",url:"https://science.nasa.gov/universe/"},
+      {label:"ESA Space Science",url:"https://www.esa.int/Science_Exploration/Space_Science"}
+    ]},
+    {match:/life|astrobiology|habit|water|biosignature|origin/i, sources:[
+      {label:"NASA Science — Exoplanets",url:"https://science.nasa.gov/exoplanets/"},
+      {label:"NASA Science — Solar System",url:"https://science.nasa.gov/solar-system/"},
+      {label:"ESA Space Science",url:"https://www.esa.int/Science_Exploration/Space_Science"}
+    ]}
   ];
+  const searchLabel = (topic.en + " " + topic.el + " " + topic.category);
+  const matched = sourceMap.find(group => group.match.test(searchLabel));
+  const sources = matched ? matched.sources : [
+    {label:"NASA Science — Universe",url:"https://science.nasa.gov/universe/"},
+    {label:"NASA Astrophysics",url:"https://science.nasa.gov/astrophysics/"},
+    {label:"ESA Space Science",url:"https://www.esa.int/Science_Exploration/Space_Science"}
+  ];
+  sources.push({label:"NASA Image and Video Library",url:"https://images.nasa.gov/"});
   sources.forEach(source => {
     const row = document.createElement("div");
     const label = document.createElement("strong");
