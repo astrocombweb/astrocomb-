@@ -382,7 +382,7 @@ footer small { font: 11px Arial, sans-serif; color: var(--muted); }
   <main>
     <section class="hero">
       <div class="emblem" aria-label="Astrocomb emblem: Saturn, the Milky Way, and a black hole">
-        <span><img src="https://images-api.nasa.gov/search?q=Saturn%20rings&media_type=image" alt="Saturn with rings" data-emblem-query="Saturn rings"></span>
+        <span><img src="https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?auto=format&fit=crop&w=300&q=80" alt="Saturn with rings" data-emblem-query="Saturn rings"></span>
         <span><img src="https://www.esa.int/var/esa/storage/images/esa_multimedia/images/2023/12/top-down_view_of_the_milky_way/25373078-1-eng-GB/Top-down_view_of_the_Milky_Way.jpg" alt="The Milky Way" loading="lazy"></span>
         <span><img src="https://www.esa.int/var/esa/storage/images/esa_multimedia/images/2025/12/artist_s_impression_of_the_flaring_windy_black_hole_in_ngc_3783/27008009-1-eng-GB/Artist_s_impression_of_the_flaring_windy_black_hole_in_NGC_3783_pillars.jpg" alt="Black hole and accretion disc" loading="lazy"></span>
       </div>
@@ -606,7 +606,7 @@ function renderTopics(filter = "") {
     button.dataset.topicId = topic.id;
     button.setAttribute("aria-label", title);
     button.innerHTML = `
-      <img src="${topicImageCache.get(topic.id) || "https://images-api.nasa.gov/search?q=" + encodeURIComponent(topic.en) + "&media_type=image"}"
+      <img src="${topicImageCache.get(topic.id) || "https://images.unsplash.com/" + topic.image + "?auto=format&fit=crop&w=450&q=75"}"
            alt="${title} — NASA image" loading="lazy" referrerpolicy="no-referrer">
       <span class="topic-name"></span>
       <span class="topic-category"></span>`;
