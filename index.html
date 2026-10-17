@@ -382,7 +382,7 @@ footer small { font: 11px Arial, sans-serif; color: var(--muted); }
       <button class="side-link" data-action="quiz" data-level="Hard" data-i18n="hard">Quiz — Hard</button>
     </section>
     <section class="side-section">
-      <h2 class="side-heading" data-i18n="media">NASA & ESA MEDIA</h2>
+      <h2 class="side-heading" data-i18n="media">NASA SPACE IMAGES</h2>
       <button class="side-link" data-action="gallery" data-i18n="gallery">Image galleries</button>
       <button class="side-link" data-action="nasa" data-i18n="nasaImages">NASA images</button>
       <button class="side-link" data-action="esa" data-i18n="esaImages">NASA images</button>
@@ -480,7 +480,7 @@ const topics = [
 const translations = {
   en: {
     explore:"EXPLORE", allTopics:"All topics", easy:"Quiz — Easy",
-    medium:"Quiz — Medium", hard:"Quiz — Hard", media:"NASA & ESA MEDIA",
+    medium:"Quiz — Medium", hard:"Quiz — Hard", media:"NASA SPACE IMAGES",
     gallery:"NASA image gallery", nasaImages:"NASA images", esaImages:"NASA images",
     about:"ABOUT", aboutSite:"About Astrocomb", sources:"Scientific sources",
     tagline:"Everything you need to learn about the universe.",
@@ -493,9 +493,9 @@ const translations = {
     aboutText:"Astrocomb is an educational concept for exploring astronomy, cosmology and fundamental physics. Each hexagon opens an introductory overview and links to established scientific resources. For research use, consult the linked source material directly.",
     sourcesTitle:"Scientific sources",
     sourcesText:"Use the primary sources below to verify facts, read mission documentation and explore scientific imagery.",
-    galleryTitle:"NASA & ESA image galleries",
+    galleryTitle:"NASA image gallery",
     nasaTitle:"NASA Image and Video Library",
-    esaTitle:"ESA Multimedia Gallery",
+    esaTitle:"NASA Image Gallery",
     quizTitle:"Knowledge check", question:"Question",
     next:"Next question", restart:"Try again", correct:"Correct answer.",
     incorrect:"Not quite. The correct answer is:", finished:"Quiz complete!",
@@ -504,7 +504,7 @@ const translations = {
   },
   el: {
     explore:"ΕΞΕΡΕΥΝΗΣΗ", allTopics:"Όλα τα θέματα", easy:"Κουίζ — Εύκολο",
-    medium:"Κουίζ — Μεσαίο", hard:"Κουίζ — Δύσκολο", media:"ΥΛΙΚΟ NASA & ESA",
+    medium:"Κουίζ — Μεσαίο", hard:"Κουίζ — Δύσκολο", media:"ΕΙΚΟΝΕΣ ΔΙΑΣΤΗΜΑΤΟΣ NASA",
     gallery:"Συλλογές εικόνων NASA", nasaImages:"Εικόνες NASA", esaImages:"Εικόνες NASA",
     about:"ΣΧΕΤΙΚΑ", aboutSite:"Σχετικά με το Astrocomb", sources:"Επιστημονικές πηγές",
     tagline:"Όλα όσα χρειάζεσαι για να μάθεις για το Σύμπαν.",
@@ -519,7 +519,7 @@ const translations = {
     sourcesText:"Χρησιμοποίησε τις πρωτογενείς πηγές για επαλήθευση πληροφοριών, τεκμηρίωση αποστολών και επιστημονικές εικόνες.",
     galleryTitle:"Συλλογή εικόνων NASA",
     nasaTitle:"Βιβλιοθήκη εικόνων και βίντεο NASA",
-    esaTitle:"Συλλογή πολυμέσων ESA",
+    esaTitle:"Συλλογή εικόνων NASA",
     quizTitle:"Έλεγχος γνώσεων", question:"Ερώτηση",
     next:"Επόμενη ερώτηση", restart:"Προσπάθησε ξανά", correct:"Σωστή απάντηση.",
     incorrect:"Όχι ακριβώς. Η σωστή απάντηση είναι:", finished:"Το κουίζ ολοκληρώθηκε!",
@@ -669,59 +669,6 @@ function checkImageUrl(url) {
     probe.onload = () => resolve(true);
     probe.onerror = () => resolve(false);
     probe.src = url;
-  });
-}
-
-async function findNasaImage(query, excluded = new Set()) {
-  const variants = [query, query + " NASA mission", query.split(" ").slice(0, 3).join(" ") + " astronomy"];
-  for (const variant of [...new Set(variants)]) {
-    try {
-      const response = await fetch("https://images-api.nasa.gov/search?q=" + encodeURIComponent(variant) + "&media_type=image&page_size=100");
-      if (!response.ok) continue;
-      const data = await response.json();
-      const items = data.collection && data.collection.items ? data.collection.items : [];
-      const terms = query.toLowerCase().split(/[^a-z0-9]+/).filter(word => word.length > 2);
-      const candidates = items.map(item => {
-        const meta = item.data && item.data[0] ? item.data[0] : {};
-        const text = ((meta.title || "") + " " + (meta.description || "")).toLowerCase();
-        const score = terms.reduce((sum, term) => sum + (text.includes(term) ? 1 : 0), 0);
-        const links = item.links || [];
-        const link = links.find(entry => entry.render === "image") || links[0];
-        return {url: link && link.href, score, title: meta.title || "", description: meta.description || ""};
-      }).filter(item => item.url && item.score >= Math.min(3, terms.length) && !excluded.has(item.url) && !/\b(astronaut|crew member|portrait|selfie|person|people|face|human subject)\b/i.test((item.title || "") + " " + (item.description || ""))).sort((a,b) => b.score-a.score);
-      for (const candidate of candidates.slice(0, 25)) {
-        if (await checkImageUrl(candidate.url)) return candidate.url;
-      }
-    } catch (error) {
-      console.warn("NASA image search failed:", error);
-    }
-  }
-  return null;
-}
-async function loadTopicImages() {
-  if (topicImagesStarted) return;
-  topicImagesStarted = true;
-  for (const topic of topics) {
-    const imageUrl = await findNasaImage(topic.imageQuery || topic.en, usedTopicImages);
-    if (imageUrl) {
-      usedTopicImages.add(imageUrl);
-      topicImageCache.set(topic.id, imageUrl);
-    }
-    const button = grid.querySelector('[data-topic-id="' + topic.id + '"]');
-    const img = button && button.querySelector("img");
-    if (img && imageUrl) {
-      img.dataset.nasaLoaded = "true";
-      img.src = imageUrl;
-      img.alt = (language === "el" ? topic.el : topic.en) + " — NASA image";
-      img.dataset.source = "NASA";
-    }
-  }
-}
-
-function loadEmblemSaturn() {
-  findNasaImage("Saturn planet rings Cassini").then(url => {
-    const image = document.querySelector(".emblem span:nth-child(1) img");
-    if (url && image) image.src = url;
   });
 }
 
