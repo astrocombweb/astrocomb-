@@ -299,6 +299,17 @@ footer small { font: 11px Arial, sans-serif; color: var(--muted); }
 .answer.correct { border-color: #7ed6a1; background: #123426; }
 .answer.wrong { border-color: #ff9999; background: #3b1b23; }
 .feedback { min-height: 28px; color: #c8e6ff; }
+
+.image-gallery { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:12px; margin-top:18px; }
+.gallery-card { background:#0b192b; border:1px solid #29415e; padding:7px; color:#eaf4ff; text-align:left; cursor:pointer; min-width:0; }
+.gallery-card:hover { border-color:#8dc9ff; transform:translateY(-2px); }
+.gallery-card img { display:block; width:100%; aspect-ratio:4/3; object-fit:cover; background:#06101d; }
+.gallery-card span { display:block; font-size:12px; line-height:1.4; padding:8px 2px 3px; }
+.gallery-status { color:#b9cce2; font-size:13px; }
+.gallery-zoom { display:grid; place-items:center; gap:12px; }
+.gallery-zoom img { max-width:100%; max-height:65vh; object-fit:contain; }
+.gallery-zoom p { text-align:center; }
+
 .resource-list { display: grid; gap: 12px; margin-top: 18px; }
 .resource-list a { color: #9bcaff; }
 .article-content { font-family: Georgia, "Times New Roman", serif; }
@@ -837,6 +848,97 @@ function showQuizResult() {
   openModal(t("finished"), content);
 }
 
+
+let nasaGalleryPage = 1;
+let nasaGalleryItems = [];
+let nasaGalleryLoading = false;
+
+async function openImageGallery() {
+  nasaGalleryPage = 1;
+  nasaGalleryItems = [];
+  const content = document.createElement("div");
+  const intro = document.createElement("p");
+  intro.textContent = language === "el"
+    ? "Εξερεύνησε φωτογραφίες από το αρχείο της NASA. Πάτησε οποιαδήποτε εικόνα για να τη δεις σε μεγαλύτερο μέγεθος."
+    : "Explore photographs from NASA's image archive. Select any image to view it larger.";
+  const status = document.createElement("p");
+  status.className = "gallery-status";
+  status.textContent = language === "el" ? "Φόρτωση εικόνων…" : "Loading images…";
+  const grid = document.createElement("div");
+  grid.className = "image-gallery";
+  const more = document.createElement("button");
+  more.className = "primary-button";
+  more.textContent = language === "el" ? "Φόρτωσε περισσότερες εικόνες" : "Load more images";
+  more.addEventListener("click", () => loadNasaGalleryPage(status, grid, more));
+  content.append(intro, status, grid, more);
+  openModal(language === "el" ? "Συλλογή εικόνων NASA" : "NASA Image Gallery", content);
+  await loadNasaGalleryPage(status, grid, more);
+}
+
+async function loadNasaGalleryPage(status, grid, more) {
+  if (nasaGalleryLoading) return;
+  nasaGalleryLoading = true;
+  more.disabled = true;
+  status.textContent = language === "el" ? "Φόρτωση εικόνων…" : "Loading images…";
+  try {
+    const response = await fetch("https://images-api.nasa.gov/search?q=space%20nebula%20planet%20galaxy&media_type=image&page_size=40&page=" + nasaGalleryPage);
+    if (!response.ok) throw new Error("NASA image API request failed");
+    const data = await response.json();
+    const used = new Set(nasaGalleryItems.map(item => item.url));
+    const incoming = (data.collection?.items || []).map(item => {
+      const image = (item.links || []).find(link => link.render === "image" && link.href);
+      const info = (item.data || [])[0] || {};
+      return image ? { url:image.href, title:info.title || "NASA image", description:info.description || "", date:info.date_created || "" } : null;
+    }).filter(item => item && !used.has(item.url));
+    nasaGalleryItems.push(...incoming);
+    incoming.forEach(item => {
+      const card = document.createElement("button");
+      card.className = "gallery-card";
+      card.type = "button";
+      const img = document.createElement("img");
+      img.loading = "lazy";
+      img.src = item.url;
+      img.alt = item.title;
+      img.onerror = () => card.remove();
+      const label = document.createElement("span");
+      label.textContent = item.title;
+      card.append(img, label);
+      card.addEventListener("click", () => {
+        const zoom = document.createElement("div");
+        zoom.className = "gallery-zoom";
+        const large = document.createElement("img");
+        large.src = item.url;
+        large.alt = item.title;
+        const caption = document.createElement("p");
+        caption.textContent = item.title + (item.date ? " · " + item.date.slice(0,10) : "");
+        const description = document.createElement("p");
+        description.textContent = item.description.slice(0, 500);
+        const source = document.createElement("a");
+        source.href = item.url;
+        source.target = "_blank";
+        source.rel = "noopener noreferrer";
+        source.textContent = language === "el" ? "Άνοιγμα πρωτότυπης εικόνας ↗" : "Open original image ↗";
+        zoom.append(large, caption, description, source);
+        openModal(item.title, zoom);
+      });
+      grid.appendChild(card);
+    });
+    nasaGalleryPage++;
+    status.textContent = language === "el"
+      ? "Εμφανίζονται " + grid.children.length + " εικόνες από το αρχείο NASA."
+      : "Showing " + grid.children.length + " images from NASA's archive.";
+    more.hidden = incoming.length === 0;
+  } catch (error) {
+    status.textContent = language === "el"
+      ? "Δεν ήταν δυνατή η φόρτωση εικόνων αυτή τη στιγμή. Δοκίμασε ξανά ή άνοιξε το επίσημο αρχείο NASA."
+      : "Images could not be loaded right now. Try again or open NASA's official archive.";
+    more.hidden = false;
+  } finally {
+    nasaGalleryLoading = false;
+    more.disabled = false;
+  }
+}
+
 function openResources(kind) {
   const content = document.createElement("div");
   const p = document.createElement("p");
@@ -894,6 +996,8 @@ document.querySelectorAll("[data-action]").forEach(button => {
       renderTopics();
     } else if (action === "quiz") {
       startQuiz(button.dataset.level);
+    } else if (action === "gallery") {
+      openImageGallery();
     } else {
       openResources(action);
     }
