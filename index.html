@@ -580,6 +580,7 @@ function topicImageGroup(topic) {
 function topicImageQuery(topic) {
   const group = topicImageGroup(topic);
   // Requested image overrides: topic #7 uses Saturn; planetary atmospheres and climate uses Earth.
+  if (topic.id === "solar-system") return "NASA solar system planets montage Sun Mercury Venus Earth Mars Jupiter Saturn Uranus Neptune";
   if (topic.id === "planet-mercury") return "NASA Cassini Saturn full planet and rings";
   if (topic.id === "planet-climates") return "NASA Earth Blue Marble full planet disk from space atmosphere";
   if (group === "planet") {
@@ -674,8 +675,10 @@ function checkImageUrl(url) {
 }
 
 function topicFallbackImage(topic) {
-  const imageId = topic.id === "planet-mercury" || topic.id === "planet-saturn"
-    ? "photo-1534796636912-3b95b3ab5986"
+  const imageId = topic.id === "solar-system"
+    ? "photo-1614730321146-b6fa6a46bcb4"
+    : topic.id === "planet-mercury" || topic.id === "planet-saturn"
+      ? "photo-1534796636912-3b95b3ab5986"
     : topic.id === "planet-climates" || topic.id === "earth" || topic.id === "planet-earth"
       ? "photo-1446776811953-b23d57bd21aa"
       : (topic.image || "photo-1462331940025-496dfbfc7564");
