@@ -579,6 +579,9 @@ function topicImageGroup(topic) {
 }
 function topicImageQuery(topic) {
   const group = topicImageGroup(topic);
+  // Requested image overrides: topic #7 uses Saturn; planetary atmospheres and climate uses Earth.
+  if (topic.id === "planet-mercury") return "NASA Cassini Saturn full planet and rings";
+  if (topic.id === "planet-climates") return "NASA Earth Blue Marble full planet disk from space atmosphere";
   if (group === "planet") {
     const planetNames = ["Mercury","Venus","Earth","Mars","Jupiter","Saturn","Uranus","Neptune"];
     const exact = planetNames.find(name => topic.id === "planet-" + name.toLowerCase());
