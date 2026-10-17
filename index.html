@@ -441,6 +441,7 @@ const topics = [
   {id:"dark-matter",category:"Cosmology",en:"Dark Matter & Dark Energy",el:"Σκοτεινή Ύλη & Σκοτεινή Ενέργεια",image:"photo-1462331940025-496dfbfc7564",imageQuery:"NASA dark matter gravitational lensing galaxy cluster",desc:"Examine the observational evidence for dark matter and the accelerated expansion associated with dark energy.",descEL:"Εξέτασε τα παρατηρησιακά στοιχεία για τη σκοτεινή ύλη και την επιταχυνόμενη διαστολή που συνδέεται με τη σκοτεινή ενέργεια."},
   {id:"black-holes",category:"Relativistic Astrophysics",en:"Black Holes & Neutron Stars",el:"Μαύρες Τρύπες & Αστέρες Νετρονίων",image:"photo-1462331940025-496dfbfc7564",imageQuery:"NASA black hole accretion disk neutron star",desc:"Learn about event horizons, accretion disks, gravitational waves and the extreme remnants of stellar evolution.",descEL:"Μάθε για τους ορίζοντες γεγονότων, τους δίσκους προσαύξησης, τα βαρυτικά κύματα και τα ακραία κατάλοιπα της αστρικής εξέλιξης."},
   {id:"solar-system",category:"Planetary Science",en:"Solar System & Planets",el:"Ηλιακό Σύστημα & Πλανήτες",image:"photo-1614730321146-b6fa6a46bcb4",imageQuery:"NASA solar system planets montage",desc:"Explore the Sun, planets, moons, dwarf planets and the physical processes shaping planetary systems.",descEL:"Εξερεύνησε τον Ήλιο, τους πλανήτες, τους δορυφόρους, τους νάνους πλανήτες και τις διεργασίες που διαμορφώνουν τα πλανητικά συστήματα."},
+  {id:"other-planetary-systems",category:"Exoplanetary Science",en:"Other Planetary Systems",el:"Άλλα Πλανητικά Συστήματα",image:"photo-1614728263952-84ea256f9679",imageQuery:"NASA TRAPPIST-1 planetary system planets artist concept",desc:"Compare our Solar System with other planetary systems, including compact multi-planet systems and worlds orbiting distant stars.",descEL:"Σύγκρινε το Ηλιακό μας Σύστημα με άλλα πλανητικά συστήματα, από συμπαγή συστήματα πολλών πλανητών έως κόσμους γύρω από μακρινά άστρα."},
   {id:"stars",category:"Stellar Astrophysics",en:"Stars & Stellar Evolution",el:"Άστρα & Αστρική Εξέλιξη",image:"photo-1419242902214-272b3f66ee7a",imageQuery:"NASA star formation stellar evolution supernova",desc:"Follow stellar birth, nuclear fusion, stellar lifetimes, supernovae and the origin of chemical elements.",descEL:"Παρακολούθησε τη γέννηση των άστρων, την πυρηνική σύντηξη, τη ζωή τους, τους υπερκαινοφανείς και την προέλευση των χημικών στοιχείων."},
   {id:"exoplanets",category:"Planetary Science",en:"Exoplanets & Habitable Worlds",el:"Εξωπλανήτες & Κατοικήσιμοι Κόσμοι",image:"photo-1614728263952-84ea256f9679",imageQuery:"NASA exoplanet artist concept planet star",desc:"Investigate planets beyond the Solar System, detection methods, atmospheres and habitability.",descEL:"Μελέτησε πλανήτες έξω από το Ηλιακό Σύστημα, τις μεθόδους ανίχνευσης, τις ατμόσφαιρες και την κατοικησιμότητα."},
   {id:"astrobiology",category:"Astrobiology",en:"Astrobiology & Life",el:"Αστροβιολογία & Ζωή",image:"photo-1446776811953-b23d57bd21aa",imageQuery:"NASA astrobiology Mars ancient microbial life",desc:"Examine the chemistry of life, extremophiles, habitable environments and the scientific search for life beyond Earth.",descEL:"Εξέτασε τη χημεία της ζωής, τους ακραίους οργανισμούς, τα κατοικήσιμα περιβάλλοντα και την επιστημονική αναζήτηση ζωής πέρα από τη Γη."},
@@ -601,40 +602,43 @@ function checkImageUrl(url) {
 }
 
 async function findNasaImage(query, excluded = new Set()) {
-  try {
-    const response = await fetch("https://images-api.nasa.gov/search?q=" + encodeURIComponent(query) + "&media_type=image&page_size=100");
-    if (!response.ok) return null;
-    const data = await response.json();
-    const items = data.collection && data.collection.items ? data.collection.items : [];
-    const terms = query.toLowerCase().split(/[^a-z0-9]+/).filter(word => word.length > 3 && !["nasa","image","images","artist","concept","from","with","into","space"].includes(word));
-    const candidates = items.map(item => {
-      const href = item.links && item.links.find(link => link.render === "image")?.href;
-      const meta = (item.data || [])[0] || {};
-      const text = ((meta.title || "") + " " + (meta.description || "")).toLowerCase();
-      const score = terms.reduce((sum, word) => sum + (text.includes(word) ? 1 : 0), 0);
-      return {href, score};
-    }).filter(item => item.href && !excluded.has(item.href) && /images\\.nasa\\.gov/.test(item.href) && item.score > 0);
-    candidates.sort((a,b) => b.score-a.score);
-    for (const item of candidates) {
-      if (await checkImageUrl(item.href)) return item.href;
+  const variants = [query, query + " NASA mission", query.split(" ").slice(0, 3).join(" ") + " astronomy"];
+  for (const variant of [...new Set(variants)]) {
+    try {
+      const response = await fetch("https://images-api.nasa.gov/search?q=" + encodeURIComponent(variant) + "&media_type=image&page_size=100");
+      if (!response.ok) continue;
+      const data = await response.json();
+      const items = data.collection && data.collection.items ? data.collection.items : [];
+      const terms = query.toLowerCase().split(/[^a-z0-9]+/).filter(word => word.length > 2);
+      const candidates = items.map(item => {
+        const meta = item.data && item.data[0] ? item.data[0] : {};
+        const text = ((meta.title || "") + " " + (meta.description || "")).toLowerCase();
+        const score = terms.reduce((sum, term) => sum + (text.includes(term) ? 1 : 0), 0);
+        const links = item.links || [];
+        const link = links.find(entry => entry.render === "image") || links[0];
+        return {url: link && link.href, score};
+      }).filter(item => item.url && item.score > 0 && !excluded.has(item.url)).sort((a,b) => b.score-a.score);
+      for (const candidate of candidates.slice(0, 25)) {
+        if (await checkImageUrl(candidate.url)) return candidate.url;
+      }
+    } catch (error) {
+      console.warn("NASA image search failed:", error);
     }
-  } catch (error) {
-    console.warn("NASA image search unavailable for:", query);
   }
   return null;
 }
-
 async function loadTopicImages() {
   if (topicImagesStarted) return;
   topicImagesStarted = true;
   for (const topic of topics) {
     const imageUrl = await findNasaImage(topic.imageQuery || topic.en, usedTopicImages);
-    if (!imageUrl) continue;
-    usedTopicImages.add(imageUrl);
-    topicImageCache.set(topic.id, imageUrl);
+    if (imageUrl) {
+      usedTopicImages.add(imageUrl);
+      topicImageCache.set(topic.id, imageUrl);
+    }
     const button = grid.querySelector('[data-topic-id="' + topic.id + '"]');
     const img = button && button.querySelector("img");
-    if (img) {
+    if (img && imageUrl) {
       img.dataset.nasaLoaded = "true";
       img.src = imageUrl;
       img.alt = (language === "el" ? topic.el : topic.en) + " — NASA image";
