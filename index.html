@@ -591,32 +591,42 @@ const topicFallbackImages = [
   "photo-1490730141103-6cac27aaab94"
 ];
 
+function checkImageUrl(url) {
+  return new Promise(resolve => {
+    const probe = new Image();
+    probe.onload = () => resolve(true);
+    probe.onerror = () => resolve(false);
+    probe.src = url;
+  });
+}
+
 async function findNasaImage(query, excluded = new Set()) {
   try {
-    const response = await fetch("https://images-api.nasa.gov/search?q=" + encodeURIComponent(query) + "&media_type=image&page_size=60");
+    const response = await fetch("https://images-api.nasa.gov/search?q=" + encodeURIComponent(query) + "&media_type=image&page_size=100");
     if (!response.ok) return null;
     const data = await response.json();
     const items = data.collection && data.collection.items ? data.collection.items : [];
-    const terms = query.toLowerCase().split(/[^a-z0-9]+/).filter(word => word.length > 3 && !["nasa","image","images","artist","concept","from","with","into"].includes(word));
+    const terms = query.toLowerCase().split(/[^a-z0-9]+/).filter(word => word.length > 3 && !["nasa","image","images","artist","concept","from","with","into","space"].includes(word));
     const candidates = items.map(item => {
       const href = item.links && item.links.find(link => link.render === "image")?.href;
       const meta = (item.data || [])[0] || {};
       const text = ((meta.title || "") + " " + (meta.description || "")).toLowerCase();
       const score = terms.reduce((sum, word) => sum + (text.includes(word) ? 1 : 0), 0);
       return {href, score};
-    }).filter(item => item.href && !excluded.has(item.href) && /images\.nasa\.gov/.test(item.href));
+    }).filter(item => item.href && !excluded.has(item.href) && /images\\.nasa\\.gov/.test(item.href) && item.score > 0);
     candidates.sort((a,b) => b.score-a.score);
-    return candidates.length ? candidates[0].href : null;
+    for (const item of candidates) {
+      if (await checkImageUrl(item.href)) return item.href;
+    }
   } catch (error) {
     console.warn("NASA image search unavailable for:", query);
-    return null;
   }
+  return null;
 }
 
 async function loadTopicImages() {
   if (topicImagesStarted) return;
   topicImagesStarted = true;
-  // Load sequentially so every tile reserves a unique image before the next one searches.
   for (const topic of topics) {
     const imageUrl = await findNasaImage(topic.imageQuery || topic.en, usedTopicImages);
     if (!imageUrl) continue;
@@ -625,6 +635,7 @@ async function loadTopicImages() {
     const button = grid.querySelector('[data-topic-id="' + topic.id + '"]');
     const img = button && button.querySelector("img");
     if (img) {
+      img.dataset.nasaLoaded = "true";
       img.src = imageUrl;
       img.alt = (language === "el" ? topic.el : topic.en) + " — NASA image";
       img.dataset.source = "NASA";
@@ -661,6 +672,14 @@ function renderTopics(filter = "") {
            alt="${title} — space image" loading="lazy" referrerpolicy="no-referrer">
       <span class="topic-name"></span>
       <span class="topic-category"></span>`;
+    const topicImg = button.querySelector("img");
+    topicImg.addEventListener("error", () => {
+      if (topicImg.dataset.fallbackUsed === "true") return;
+      topicImg.dataset.fallbackUsed = "true";
+      topicImageCache.delete(topic.id);
+      topicImg.dataset.source = "fallback";
+      topicImg.src = "https://images.unsplash.com/" + topicFallbackImages[topics.indexOf(topic)] + "?auto=format&fit=crop&w=900&q=85";
+    });
     button.querySelector(".topic-name").textContent = title;
     button.querySelector(".topic-category").textContent = category;
     button.addEventListener("click", () => openTopic(topic));
@@ -694,6 +713,10 @@ function openTopic(topic) {
   heroImage.className = "article-hero-image";
   heroImage.alt = titleText + (isEl ? " — σχετική εικόνα NASA" : " — related NASA image");
   heroImage.loading = "lazy";
+  heroImage.addEventListener("error", () => {
+    const fallback = "https://images.unsplash.com/" + topicFallbackImages[topics.indexOf(topic)] + "?auto=format&fit=crop&w=1200&q=85";
+    if (heroImage.src !== fallback) heroImage.src = fallback;
+  });
   const cachedImage = topicImageCache.get(topic.id);
   const tileImage = grid.querySelector('[data-topic-id="' + topic.id + '"] img');
   heroImage.src = cachedImage || (tileImage ? tileImage.src : "");
