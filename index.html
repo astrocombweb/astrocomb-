@@ -853,6 +853,71 @@ let nasaGalleryPage = 1;
 let nasaGalleryItems = [];
 let nasaGalleryLoading = false;
 
+
+async function openEsaGallery() {
+  const content = document.createElement("div");
+  const intro = document.createElement("p");
+  intro.textContent = language === "el"
+    ? "Φωτογραφίες από την επίσημη συλλογή εικόνων της ESA. Πάτησε μια εικόνα για μεγέθυνση."
+    : "Photographs from ESA's official image collection. Select an image to enlarge it.";
+  const status = document.createElement("p");
+  status.className = "gallery-status";
+  status.textContent = language === "el" ? "Φόρτωση εικόνων ESA…" : "Loading ESA images…";
+  const grid = document.createElement("div");
+  grid.className = "image-gallery";
+  const more = document.createElement("a");
+  more.className = "primary-button";
+  more.href = "https://www.esa.int/ESA_Multimedia/Images";
+  more.target = "_blank";
+  more.rel = "noopener noreferrer";
+  more.textContent = language === "el" ? "Περισσότερες εικόνες στο ESA ↗" : "More images at ESA ↗";
+  content.append(intro, status, grid, more);
+  openModal(language === "el" ? "Συλλογή εικόνων ESA" : "ESA Image Gallery", content);
+  const sources = [
+    {title:"Euclid’s view of our galaxy’s bulge",page:"https://www.esa.int/ESA_Multimedia/Images/2026/06/Euclid_s_view_of_our_galaxy_s_bulge",img:"https://www.esa.int/var/esa/storage/images/esa_multimedia/images/2026/06/euclid_s_view_of_our_galaxy_s_bulge/27270636-1-eng-GB/Euclid_s_view_of_our_galaxy_s_bulge_pillars.jpg"},
+    {title:"Hubble & Euclid: Cat’s Eye Nebula",page:"https://www.esa.int/ESA_Multimedia/Images/2026/03/Hubble_Euclid_zoom_into_Cat_s_Eye_Nebula",img:"https://www.esa.int/var/esa/storage/images/esa_multimedia/images/2026/03/hubble_euclid_zoom_into_cat_s_eye_nebula/27097077-1-eng-GB/Hubble_Euclid_zoom_into_Cat_s_Eye_Nebula_pillars.jpg"},
+    {title:"Top-down view of the Milky Way",page:"https://www.esa.int/ESA_Multimedia/Images/2023/12/Top-down_view_of_the_Milky_Way",img:"https://www.esa.int/var/esa/storage/images/esa_multimedia/images/2023/12/top-down_view_of_the_milky_way/25373078-1-eng-GB/Top-down_view_of_the_Milky_Way.jpg"},
+    {title:"Flaring windy black hole in NGC 3783",page:"https://www.esa.int/ESA_Multimedia/Images/2025/12/Artist_s_impression_of_the_flaring_windy_black_hole_in_NGC_3783",img:"https://www.esa.int/var/esa/storage/images/esa_multimedia/images/2025/12/artist_s_impression_of_the_flaring_windy_black_hole_in_ngc_3783/27008009-1-eng-GB/Artist_s_impression_of_the_flaring_windy_black_hole_in_NGC_3783_pillars.jpg"},
+    {title:"Thirty years of Hubble Space Telescope",page:"https://www.esa.int/ESA_Multimedia/Images/2020/04/Thirty_years_of_Hubble_Space_Telescope",img:"https://www.esa.int/var/esa/storage/images/esa_multimedia/images/2020/04/thirty_years_of_hubble_space_telescope/21960926-1-eng-GB/Thirty_years_of_Hubble_Space_Telescope_pillars.jpg"}
+  ];
+  const seen = new Set();
+  sources.forEach(item => {
+    if (seen.has(item.img)) return;
+    seen.add(item.img);
+    const card = document.createElement("button");
+    card.className = "gallery-card";
+    card.type = "button";
+    const img = document.createElement("img");
+    img.loading = "lazy";
+    img.src = item.img;
+    img.alt = item.title;
+    img.onerror = () => card.remove();
+    const label = document.createElement("span");
+    label.textContent = item.title;
+    card.append(img,label);
+    card.addEventListener("click", () => {
+      const zoom = document.createElement("div");
+      zoom.className = "gallery-zoom";
+      const large = document.createElement("img");
+      large.src = item.img;
+      large.alt = item.title;
+      const caption = document.createElement("p");
+      caption.textContent = item.title;
+      const source = document.createElement("a");
+      source.href = item.page;
+      source.target = "_blank";
+      source.rel = "noopener noreferrer";
+      source.textContent = language === "el" ? "Πληροφορίες στην ESA ↗" : "View details at ESA ↗";
+      zoom.append(large,caption,source);
+      openModal(item.title,zoom);
+    });
+    grid.appendChild(card);
+  });
+  status.textContent = language === "el"
+    ? "Εμφανίζονται επιλεγμένες εικόνες ESA. Χρησιμοποίησε τον σύνδεσμο για την πλήρη συλλογή."
+    : "Showing selected ESA images. Use the link for the complete collection.";
+}
+
 async function openImageGallery() {
   nasaGalleryPage = 1;
   nasaGalleryItems = [];
@@ -996,8 +1061,10 @@ document.querySelectorAll("[data-action]").forEach(button => {
       renderTopics();
     } else if (action === "quiz") {
       startQuiz(button.dataset.level);
-    } else if (action === "gallery") {
+    } else if (action === "gallery" || action === "nasa") {
       openImageGallery();
+    } else if (action === "esa") {
+      openEsaGallery();
     } else {
       openResources(action);
     }
