@@ -108,29 +108,31 @@ header {
 }
 .brand span { color: var(--blue); }
 .brand-emblem {
-  width: 91px;
-  height: 42px;
-  flex: 0 0 91px;
+  width: 126px;
+  height: 50px;
+  flex: 0 0 126px;
   position: relative;
-  margin-left: -8px;
+  margin-left: -5px;
+  filter: drop-shadow(0 0 9px rgba(93,177,255,.28));
 }
 .brand-emblem span {
   position: absolute;
-  top: 2px;
-  width: 34px;
-  height: 31px;
+  top: 3px;
+  width: 43px;
+  height: 43px;
   overflow: hidden;
-  clip-path: polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);
-  border: 1px solid var(--blue);
+  border-radius: 50%;
+  border: 2px solid #8ccaff;
   background: #081322;
-  box-shadow: 0 0 12px rgba(120,185,255,.2);
+  box-shadow: 0 0 0 2px rgba(5,9,20,.9), 0 0 16px rgba(120,185,255,.28);
 }
 .brand-emblem span:nth-child(1) { left: 0; }
-.brand-emblem span:nth-child(2) { left: 28px; top: 10px; }
-.brand-emblem span:nth-child(3) { left: 56px; }
+.brand-emblem span:nth-child(2) { left: 41px; top: 3px; }
+.brand-emblem span:nth-child(3) { left: 82px; top: 3px; }
+.brand-emblem img { width: 100%; height: 100%; display: block; object-fit: cover; }
 .brand-emblem img { width: 100%; height: 100%; display: block; object-fit: cover; }
 @media (max-width: 760px) {
-  .brand-emblem { width: 72px; flex-basis: 72px; transform: scale(.82); transform-origin: left center; margin-left: -10px; margin-right: -9px; }
+  .brand-emblem { width: 104px; flex-basis: 104px; transform: scale(.78); transform-origin: left center; margin-left: -8px; margin-right: -16px; }
 }
 @media (max-width: 390px) {
   .brand-emblem { display: none; }
@@ -512,7 +514,7 @@ const topics = [
   {id:"planet-earth",category:"Solar System Planets",en:"Earth",el:"Γη",image:"photo-1500530855697-b586d89ba3ee",imageQuery:"NASA Blue Marble Earth full planet disk from space",desc:"Study Earth as a living planet, from oceans and atmosphere to its magnetic field and unique known biosphere.",descEL:"Μελέτησε τη Γη ως ζωντανό πλανήτη: ωκεανούς, ατμόσφαιρα, μαγνητικό πεδίο και τη μοναδική γνωστή βιόσφαιρα."},
   {id:"planet-mars",category:"Solar System Planets",en:"Mars",el:"Άρης",image:"photo-1464802686167-b939a6910659",imageQuery:"NASA Mars global full planet disk orange red planet",desc:"Explore Mars, its rusty surface, giant volcanoes, ancient river valleys and the search for past microbial life.",descEL:"Εξερεύνησε τον Άρη, την κοκκινωπή επιφάνεια, τα γιγάντια ηφαίστεια, τις αρχαίες κοιλάδες ποταμών και την αναζήτηση παλιάς μικροβιακής ζωής."},
   {id:"planet-jupiter",category:"Solar System Planets",en:"Jupiter",el:"Δίας",image:"photo-1534796636912-3b95b3ab5986",imageQuery:"NASA Juno Jupiter full planet Great Red Spot cloud bands",desc:"Investigate Jupiter, the Solar System's largest planet, its turbulent cloud bands, Great Red Spot and extensive moon system.",descEL:"Ερεύνησε τον Δία, τον μεγαλύτερο πλανήτη, τις ταραγμένες ζώνες νεφών, τη Μεγάλη Ερυθρά Κηλίδα και το εκτεταμένο σύστημα δορυφόρων."},
-  {id:"planet-saturn",category:"Solar System Planets",en:"Saturn",el:"Κρόνος",image:"photo-1506318137071-a8e063b4bec0",imageQuery:"NASA Cassini Saturn full planet rings",desc:"Learn about Saturn's spectacular rings, icy moons and atmosphere of a giant planet made mostly of hydrogen and helium.",descEL:"Μάθε για τους εντυπωσιακούς δακτυλίους του Κρόνου, τους παγωμένους δορυφόρους και την ατμόσφαιρα γίγαντα αερίων."},
+  {id:"planet-saturn",category:"Solar System Planets",en:"Saturn",el:"Κρόνος",image:"photo-1614730321146-b6fa6a46bcb4",imageQuery:"NASA Cassini Saturn full planet rings true color",desc:"Learn about Saturn's spectacular rings, icy moons and atmosphere of a giant planet made mostly of hydrogen and helium.",descEL:"Μάθε για τους εντυπωσιακούς δακτυλίους του Κρόνου, τους παγωμένους δορυφόρους και την ατμόσφαιρα γίγαντα αερίων."},
   {id:"planet-uranus",category:"Solar System Planets",en:"Uranus",el:"Ουρανός",image:"photo-1447433819943-74a20887a81e",imageQuery:"NASA Voyager 2 Uranus full pale blue planet",desc:"Explore Uranus, an ice giant with a blue-green atmosphere, extreme axial tilt and faint rings.",descEL:"Εξερεύνησε τον Ουρανό, έναν παγωμένο γίγαντα με γαλαζοπράσινη ατμόσφαιρα, ακραία κλίση άξονα και αμυδρούς δακτυλίους."},
   {id:"planet-neptune",category:"Solar System Planets",en:"Neptune",el:"Ποσειδώνας",image:"photo-1534447677768-be436bb09401",imageQuery:"NASA Voyager 2 Neptune full blue planet",desc:"Discover Neptune, the distant ice giant known for deep-blue hues, powerful winds and dynamic storms.",descEL:"Ανακάλυψε τον μακρινό παγωμένο γίγαντα Ποσειδώνα, με το βαθύ μπλε χρώμα, τους ισχυρούς ανέμους και τις δυναμικές καταιγίδες."},
   {id:"stars",category:"Stellar Astrophysics",en:"Stars & Stellar Evolution",el:"Άστρα & Αστρική Εξέλιξη",image:"photo-1419242902214-272b3f66ee7a",imageQuery:"NASA star formation stellar evolution supernova",desc:"Follow stellar birth, nuclear fusion, stellar lifetimes, supernovae and the origin of chemical elements.",descEL:"Παρακολούθησε τη γέννηση των άστρων, την πυρηνική σύντηξη, τη ζωή τους, τους υπερκαινοφανείς και την προέλευση των χημικών στοιχείων."},
@@ -524,7 +526,7 @@ const topics = [
   {id:"relativity",category:"Fundamental Physics",en:"General Relativity & Gravity",el:"Γενική Σχετικότητα & Βαρύτητα",image:"photo-1462331940025-496dfbfc7564",imageQuery:"NASA gravitational lensing spacetime black hole",desc:"Understand spacetime curvature, gravitational lensing, orbital motion and tests of Einstein's theory.",descEL:"Κατανόησε την καμπύλωση του χωροχρόνου, τον βαρυτικό φακό, τις τροχιές και τις δοκιμές της θεωρίας του Αϊνστάιν."},
   {id:"particles",category:"Fundamental Physics",en:"Particle Physics",el:"Σωματιδιακή Φυσική",image:"photo-1635070041078-e363dbe005cb",imageQuery:"CERN particle collision detector tracks particle physics event display",desc:"Study fundamental particles, the Standard Model, particle interactions and the early universe.",descEL:"Μελέτησε τα θεμελιώδη σωματίδια, το Καθιερωμένο Πρότυπο, τις αλληλεπιδράσεις και το πρώιμο Σύμπαν."},
   {id:"missions",category:"Space Exploration",en:"Space Missions & Exploration",el:"Διαστημικές Αποστολές & Εξερεύνηση",image:"photo-1517976487492-5750f3195933",imageQuery:"NASA spacecraft space probe solar panels deep space mission",desc:"Explore robotic spacecraft, planetary missions, space observatories and human exploration programmes.",descEL:"Εξερεύνησε ρομποτικά διαστημόπλοια, πλανητικές αποστολές, διαστημικά παρατηρητήρια και επανδρωμένα προγράμματα."},
-  {id:"small-bodies",category:"Planetary Science",en:"Asteroids, Comets & Small Bodies",el:"Αστεροειδείς, Κομήτες & Μικρά Σώματα",image:"photo-1614728263952-84ea256f9679",imageQuery:"NASA asteroid comet close up",desc:"Learn about primitive Solar System material, impact hazards and the clues small bodies preserve about planetary origins.",descEL:"Μάθε για το αρχέγονο υλικό του Ηλιακού Συστήματος, τους κινδύνους πρόσκρουσης και τα στοιχεία για την προέλευση των πλανητών."},
+  {id:"small-bodies",category:"Planetary Science",en:"Asteroids, Comets & Small Bodies",el:"Αστεροειδείς, Κομήτες & Μικρά Σώματα",image:"photo-1419242902214-272b3f66ee7a",imageQuery:"NASA star field stars deep space starry sky",desc:"Learn about primitive Solar System material, impact hazards and the clues small bodies preserve about planetary origins.",descEL:"Μάθε για το αρχέγονο υλικό του Ηλιακού Συστήματος, τους κινδύνους πρόσκρουσης και τα στοιχεία για την προέλευση των πλανητών."},
   {id:"sun",category:"Heliophysics",en:"The Sun & Space Weather",el:"Ήλιος & Διαστημικός Καιρός",image:"photo-1614730321146-b6fa6a46bcb4",imageQuery:"NASA Sun solar flare spacecraft",desc:"Investigate solar magnetic activity, flares, coronal mass ejections and their effects on Earth.",descEL:"Ερεύνησε τη μαγνητική δραστηριότητα του Ήλιου, τις εκλάμψεις, τις στεμματικές εκτοξεύσεις μάζας και τις επιπτώσεις στη Γη."},
   {id:"mechanics",category:"Classical Physics",en:"Classical Mechanics",el:"Κλασική Μηχανική",image:"photo-1635070041078-e363dbe005cb",imageQuery:"NASA orbital mechanics spacecraft trajectory",desc:"Explore motion, force, energy, momentum and the mathematical laws governing macroscopic systems.",descEL:"Εξερεύνησε την κίνηση, τη δύναμη, την ενέργεια, την ορμή και τους μαθηματικούς νόμους των μακροσκοπικών συστημάτων."},
   {id:"electromagnetism",category:"Classical Physics",en:"Electromagnetism",el:"Ηλεκτρομαγνητισμός",image:"photo-1531366488353-0d6b6d4d8f2b",imageQuery:"NASA electromagnetic spectrum diagram radio waves infrared visible ultraviolet x rays",desc:"Study electric and magnetic fields, electromagnetic waves and the radiation observed across astronomy.",descEL:"Μελέτησε ηλεκτρικά και μαγνητικά πεδία, ηλεκτρομαγνητικά κύματα και την ακτινοβολία που παρατηρούμε στην αστρονομία."},
@@ -646,7 +648,8 @@ function topicImageQuery(topic) {
   const group = topicImageGroup(topic);
   // Requested image overrides: topic #7 uses Saturn; planetary atmospheres and climate uses Earth.
   if (topic.id === "solar-system") return "NASA solar system planets montage Sun Mercury Venus Earth Mars Jupiter Saturn Uranus Neptune";
-  if (topic.id === "planet-mercury") return "NASA Cassini Saturn full planet and rings";
+  if (topic.id === "planet-saturn") return "NASA Cassini Saturn full planet and rings true color";
+  if (topic.id === "small-bodies") return "NASA star field stars deep space";
   if (topic.id === "planet-climates") return "NASA Earth Blue Marble full planet disk from space atmosphere";
   if (group === "planet") {
     const planetNames = ["Mercury","Venus","Earth","Mars","Jupiter","Saturn","Uranus","Neptune"];
@@ -712,23 +715,18 @@ async function loadTopicImages() {
 }
 async function loadEmblemSaturn() {
   const queries = [
-    {heroSelector: ".emblem span:nth-child(1) img", logoSelector: ".brand-emblem .logo-saturn img", topic: {id:"emblem-saturn",en:"Saturn planet",el:"Κρόνος",category:"Planetary Science"}},
-    {heroSelector: ".emblem span:nth-child(2) img", logoSelector: ".brand-emblem .logo-galaxy img", topic: {id:"emblem-galaxy",en:"spiral galaxy",el:"σπειροειδής γαλαξίας",category:"Galactic Astronomy"}},
-    {heroSelector: ".emblem span:nth-child(3) img", logoSelector: ".brand-emblem .logo-black-hole img", topic: {id:"emblem-blackhole",en:"black hole",el:"μαύρη τρύπα",category:"Relativistic Astrophysics"}}
+    {heroSelector: ".emblem span:nth-child(1) img", logoSelector: ".brand-emblem .logo-saturn img", topic: {id:"emblem-saturn",en:"Saturn planet",el:"Κρόνος",category:"Planetary Science"}, fallback:"https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?auto=format&fit=crop&w=300&q=85"},
+    {heroSelector: ".emblem span:nth-child(2) img", logoSelector: ".brand-emblem .logo-galaxy img", topic: {id:"emblem-galaxy",en:"spiral galaxy",el:"σπειροειδής γαλαξίας",category:"Galactic Astronomy"}, fallback:"https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&w=300&q=85"},
+    {heroSelector: ".emblem span:nth-child(3) img", logoSelector: ".brand-emblem .logo-black-hole img", topic: {id:"emblem-blackhole",en:"black hole",el:"μαύρη τρύπα",category:"Relativistic Astrophysics"}, fallback:"https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?auto=format&fit=crop&w=300&q=85"}
   ];
   const excluded = new Set(usedTopicImages);
   for (const item of queries) {
     const images = document.querySelectorAll(item.heroSelector + ", " + item.logoSelector);
+    images.forEach(image => { image.src = item.fallback; image.alt = item.topic.en + " — space image"; image.hidden = false; });
     const candidate = await findNasaImage(item.topic, excluded);
     if (candidate) {
-      images.forEach(image => {
-        image.src = candidate.url;
-        image.alt = item.topic.en + " — NASA image";
-        image.hidden = false;
-      });
+      images.forEach(image => { image.src = candidate.url; image.alt = item.topic.en + " — NASA image"; image.hidden = false; });
       excluded.add(candidate.url);
-    } else {
-      images.forEach(image => { image.hidden = true; });
     }
   }
 }
@@ -744,7 +742,11 @@ function checkImageUrl(url) {
 function topicFallbackImage(topic) {
   const imageId = topic.id === "solar-system"
     ? "photo-1614730321146-b6fa6a46bcb4"
-    : topic.id === "planet-mercury" || topic.id === "planet-saturn"
+    : topic.id === "planet-saturn"
+      ? "photo-1614730321146-b6fa6a46bcb4"
+    : topic.id === "small-bodies"
+      ? "photo-1419242902214-272b3f66ee7a"
+    : topic.id === "planet-mercury"
       ? "photo-1534796636912-3b95b3ab5986"
     : topic.id === "planet-climates" || topic.id === "earth" || topic.id === "planet-earth"
       ? "photo-1446776811953-b23d57bd21aa"
