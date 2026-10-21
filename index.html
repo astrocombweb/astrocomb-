@@ -270,28 +270,34 @@ h1 {
   content: "";
   position: absolute;
   inset: 0;
-  z-index: -2;
   clip-path: polygon(25% 1%,75% 1%,99% 50%,75% 99%,25% 99%,1% 50%);
+  pointer-events: none;
 }
-.topic::before { background: var(--blue); }
+.topic::before { z-index: -3; background: var(--blue); }
 .topic::after {
   inset: 1.5px;
   z-index: -1;
-  background: #07101dcc;
+  background: rgba(3, 9, 20, .48);
+  transition: background .2s;
 }
 .topic:hover::after, .topic:focus-visible::after {
-  background: #10223beF;
+  background: rgba(5, 15, 32, .28);
 }
 .topic img {
-  width: 62%;
-  height: 48%;
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  display: block;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  border-radius: 3px;
-  opacity: .88;
-  filter: saturate(.78);
-  transition: .2s;
+  border-radius: 0;
+  clip-path: polygon(25% 1%,75% 1%,99% 50%,75% 99%,25% 99%,1% 50%);
+  opacity: .94;
+  filter: saturate(.92);
+  transition: opacity .2s, filter .2s, transform .2s;
 }
-.topic:hover img { opacity: 1; filter: saturate(1.1); }
+.topic:hover img { opacity: 1; filter: saturate(1.12); transform: scale(1.04); }
 .topic-name { font-size: clamp(12px, 1.15vw, 16px); line-height: 1.25; }
 .topic-category {
   font: 9px Arial, sans-serif;
@@ -650,21 +656,36 @@ function topicImageGroup(topic) {
 }
 function topicImageQuery(topic) {
   const group = topicImageGroup(topic);
-  // Requested image overrides: topic #7 uses Saturn; planetary atmospheres and climate uses Earth.
-  if (topic.id === "solar-system") return "NASA solar system planets montage Sun Mercury Venus Earth Mars Jupiter Saturn Uranus Neptune";
-  if (topic.id === "planet-saturn") return "NASA Cassini Saturn full planet and rings true color";
-  if (topic.id === "small-bodies") return "NASA star field stars deep space";
-  if (topic.id === "planet-climates") return "NASA Earth Blue Marble full planet disk from space atmosphere";
+  // Prefer real Webb science imagery for astronomy subjects, with the query tailored to each title.
+  if (topic.id === "solar-system") return "James Webb Space Telescope planets solar system NASA ESA CSA";
+  if (topic.id === "planet-saturn") return "James Webb Space Telescope Saturn rings planet NASA";
+  if (topic.id === "small-bodies") return "James Webb Space Telescope comet asteroid small bodies";
+  if (topic.id === "planet-climates") return "James Webb Space Telescope planetary atmosphere exoplanet spectrum";
+  if (topic.id === "planet-earth" || topic.id === "earth") return "NASA Earth Blue Marble full planet disk from space";
+  if (topic.id === "planet-mercury") return "Mercury planet MESSENGER NASA full disk";
+  if (topic.id === "planet-venus") return "Venus planet NASA Magellan radar";
+  if (topic.id === "planet-mars") return "Mars planet NASA full disk";
+  if (topic.id === "planet-jupiter") return "James Webb Space Telescope Jupiter aurora";
+  if (topic.id === "planet-uranus") return "James Webb Space Telescope Uranus rings";
+  if (topic.id === "planet-neptune") return "James Webb Space Telescope Neptune rings";
+  if (topic.id === "telescopes") return "James Webb Space Telescope observatory mirror in space";
+  if (topic.id === "particles" || topic.id === "quantum" || topic.id === "nuclear") return "CERN particle collision event display detector";
+  if (topic.id === "electromagnetism") return "CERN particle detector electromagnetic calorimeter event display";
+  if (topic.id === "mechanics") return "CERN Large Hadron Collider accelerator tunnel magnets";
+  if (topic.id === "spectroscopy") return "James Webb Space Telescope exoplanet spectroscopy spectrum";
+  if (topic.id === "cosmic-background") return "Planck cosmic microwave background all sky map";
   if (group === "planet") {
     const planetNames = ["Mercury","Venus","Earth","Mars","Jupiter","Saturn","Uranus","Neptune"];
     const exact = planetNames.find(name => topic.id === "planet-" + name.toLowerCase());
-    if (exact) return "NASA " + exact + " planet disk from space";
-    return /exoplanet|other-planetary/.test(topic.id + " " + topic.en) ? "NASA exoplanet planetary system planet illustration" : "NASA planet planetary world from space";
+    if (exact) return "James Webb Space Telescope " + exact + " planet from space";
+    return /exoplanet|other-planetary/.test(topic.id + " " + topic.en)
+      ? "James Webb Space Telescope exoplanet planetary system atmosphere"
+      : "James Webb Space Telescope planetary science " + topic.en;
   }
-  if (group === "blackhole") return "NASA black hole accretion disk event horizon";
-  if (group === "nebula") return "NASA nebula star forming region space telescope";
-  if (group === "stars") return "NASA stars star field stellar evolution supernova";
-  return "NASA galaxy spiral galaxy deep field space telescope";
+  if (group === "blackhole") return "James Webb Space Telescope " + topic.en + " black hole accretion galaxy";
+  if (group === "nebula") return "James Webb Space Telescope " + topic.en + " nebula star cluster";
+  if (group === "stars") return "James Webb Space Telescope " + topic.en + " stellar evolution star formation";
+  return "James Webb Space Telescope " + topic.en + " galaxy cosmology deep field";
 }
 const forbiddenImageMetadata = /\b(astronaut|crew member|portrait|selfie|person|people|face|human subject|group photo|family|landscape|mountain|forest|trees|beach|building|cityscape|hiking|camping)\b/i;
 const subjectPatterns = {
@@ -677,7 +698,10 @@ const subjectPatterns = {
 async function findNasaImage(topic, excluded = usedTopicImages) {
   const group = topicImageGroup(topic);
   const query = topicImageQuery(topic);
-  const variants = [...new Set([query, "NASA " + group + " space telescope image", "NASA " + group + " astronomy"])];
+  const isCernTopic = /^(particles|quantum|nuclear|electromagnetism|mechanics)$/.test(topic.id);
+  const variants = isCernTopic
+    ? [...new Set([query, "CERN " + topic.en + " event display detector", "CERN accelerator particle physics image"])]
+    : [...new Set([query, "James Webb Space Telescope " + group + " science image NASA ESA CSA", "NASA " + group + " astronomy"])];
   for (const variant of variants) {
     try {
       const response = await fetch("https://images-api.nasa.gov/search?q=" + encodeURIComponent(variant) + "&media_type=image&page_size=100");
@@ -699,6 +723,7 @@ async function findNasaImage(topic, excluded = usedTopicImages) {
   }
   return null;
 }
+function isCernImage(url) { return /cern\.ch/i.test(url || ""); }
 async function loadTopicImages() {
   if (topicImagesStarted) return;
   topicImagesStarted = true;
@@ -712,8 +737,8 @@ async function loadTopicImages() {
     if (img) {
       img.src = candidate.url;
       img.hidden = false;
-      img.alt = (language === "el" ? topic.el : topic.en) + " — NASA image";
-      img.dataset.source = "NASA";
+      img.alt = (language === "el" ? topic.el : topic.en) + (isCernImage(candidate.url) ? " — CERN scientific image" : " — NASA/ESA Webb or space-science image");
+      img.dataset.source = isCernImage(candidate.url) ? "CERN" : "NASA/ESA";
     }
   }
 }
