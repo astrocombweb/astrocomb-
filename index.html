@@ -658,13 +658,13 @@ function topicImageQuery(topic) {
   const group = topicImageGroup(topic);
   // Prefer real Webb science imagery for astronomy subjects, with the query tailored to each title.
   if (topic.id === "solar-system") return "James Webb Space Telescope planets solar system NASA ESA CSA";
-  if (topic.id === "planet-saturn") return "James Webb Space Telescope Saturn rings planet NASA";
+  if (topic.id === "planet-saturn") return "NASA Cassini Saturn planet rings full globe";
   if (topic.id === "small-bodies") return "James Webb Space Telescope comet asteroid small bodies";
   if (topic.id === "planet-climates") return "James Webb Space Telescope planetary atmosphere exoplanet spectrum";
   if (topic.id === "planet-earth" || topic.id === "earth") return "NASA Earth Blue Marble full planet disk from space";
   if (topic.id === "planet-mercury") return "Mercury planet MESSENGER NASA full disk";
   if (topic.id === "planet-venus") return "Venus planet NASA Magellan radar";
-  if (topic.id === "planet-mars") return "Mars planet NASA full disk";
+  if (topic.id === "planet-mars") return "NASA Mars full disk planet globe";
   if (topic.id === "planet-jupiter") return "James Webb Space Telescope Jupiter aurora";
   if (topic.id === "planet-uranus") return "James Webb Space Telescope Uranus rings";
   if (topic.id === "planet-neptune") return "James Webb Space Telescope Neptune rings";
@@ -687,7 +687,7 @@ function topicImageQuery(topic) {
   if (group === "stars") return "James Webb Space Telescope " + topic.en + " stellar evolution star formation";
   return "James Webb Space Telescope " + topic.en + " galaxy cosmology deep field";
 }
-const forbiddenImageMetadata = /\b(astronaut|crew member|portrait|selfie|person|people|face|human subject|group photo|family|landscape|mountain|forest|trees|beach|building|cityscape|hiking|camping)\b/i;
+const forbiddenImageMetadata = /\b(astronaut|crew member|portrait|selfie|person|people|face|human|humans|scientist|researcher|group photo|family|landscape|mountain|forest|trees|beach|building|cityscape|hiking|camping)\b/i;
 const subjectPatterns = {
   planet: /\b(planet|mars|jupiter|saturn|venus|mercury|uranus|neptune|earth|exoplanet|planetary|worlds)\b/i,
   blackhole: /\b(black hole|black-hole|accretion disk|event horizon|quasar|neutron star)\b/i,
@@ -731,13 +731,21 @@ const cernTopicImages = {
   electromagnetism: "https://cds.cern.ch/record/2865016/files/ATLAS-PHOTO-2023-046-1.png",
   mechanics: "https://cds.cern.ch/record/2956314/files/ATLAS-PHOTO-2026-011-1.png"
 };
+const pinnedPlanetImages = {
+  "planet-saturn": "https://assets.science.nasa.gov/dynamicimage/assets/science/psd/photojournal/pia/pia11/pia11142/PIA11142.jpg",
+  "planet-mars": "https://assets.science.nasa.gov/dynamicimage/assets/science/psd/mars/downloadable_items/3/8/38601_Mars-Mariner-6-full-disk-Mars-PIA02981.jpg"
+};
 async function loadTopicImages() {
   if (topicImagesStarted) return;
   topicImagesStarted = true;
   for (const topic of topics) {
     let candidate = null;
+    const pinnedUrl = pinnedPlanetImages[topic.id];
+    if (pinnedUrl && await checkImageUrl(pinnedUrl)) {
+      candidate = {url: pinnedUrl, title: topic.en + " — official NASA image", metadata: topic.en + " planet NASA space image"};
+    }
     const cernUrl = cernTopicImages[topic.id];
-    if (cernUrl && !usedTopicImages.has(cernUrl) && await checkImageUrl(cernUrl)) {
+    if (!candidate && cernUrl && !usedTopicImages.has(cernUrl) && await checkImageUrl(cernUrl)) {
       candidate = {url: cernUrl, title: topic.en + " — CERN event display", metadata: "CERN particle physics detector event display"};
     }
     if (!candidate) candidate = await findNasaImage(topic, usedTopicImages);
@@ -781,6 +789,7 @@ function checkImageUrl(url) {
 }
 
 function topicFallbackImage(topic) {
+  if (pinnedPlanetImages[topic.id]) return pinnedPlanetImages[topic.id];
   const imageId = topic.id === "solar-system"
     ? "photo-1614730321146-b6fa6a46bcb4"
     : topic.id === "planet-saturn"
