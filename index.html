@@ -668,10 +668,12 @@ function topicImageQuery(topic) {
   if (topic.id === "planet-jupiter") return "James Webb Space Telescope Jupiter aurora";
   if (topic.id === "planet-uranus") return "James Webb Space Telescope Uranus rings";
   if (topic.id === "planet-neptune") return "James Webb Space Telescope Neptune rings";
-  if (topic.id === "telescopes") return "James Webb Space Telescope observatory mirror in space";
-  if (topic.id === "particles" || topic.id === "quantum" || topic.id === "nuclear") return "CERN particle collision event display detector";
-  if (topic.id === "electromagnetism") return "CERN particle detector electromagnetic calorimeter event display";
-  if (topic.id === "mechanics") return "CERN Large Hadron Collider accelerator tunnel magnets";
+  if (topic.id === "telescopes") return "NASA James Webb telescope deep field galaxies nebula space image";
+  if (topic.id === "particles") return "NASA cosmic rays aurora space radiation Earth magnetosphere";
+  if (topic.id === "quantum") return "NASA neutron star quantum matter space astrophysics";
+  if (topic.id === "nuclear") return "NASA supernova nucleosynthesis star explosion nebula";
+  if (topic.id === "electromagnetism") return "NASA aurora magnetic field solar wind space";
+  if (topic.id === "mechanics") return "NASA orbital mechanics planets spacecraft in space";
   if (topic.id === "spectroscopy") return "James Webb Space Telescope exoplanet spectroscopy spectrum";
   if (topic.id === "cosmic-background") return "Planck cosmic microwave background all sky map";
   if (group === "planet") {
@@ -744,7 +746,7 @@ async function loadTopicImages() {
     if (pinnedUrl && await checkImageUrl(pinnedUrl)) {
       candidate = {url: pinnedUrl, title: topic.en + " — official NASA image", metadata: topic.en + " planet NASA space image"};
     }
-    const cernUrl = cernTopicImages[topic.id];
+    const cernUrl = null; // Astrocomb topic tiles use astronomical images only, never terrestrial lab/detector photos.
     if (!candidate && cernUrl && !usedTopicImages.has(cernUrl) && await checkImageUrl(cernUrl)) {
       candidate = {url: cernUrl, title: topic.en + " — CERN event display", metadata: "CERN particle physics detector event display"};
     }
@@ -790,17 +792,18 @@ function checkImageUrl(url) {
 
 function topicFallbackImage(topic) {
   if (pinnedPlanetImages[topic.id]) return pinnedPlanetImages[topic.id];
-  const imageId = topic.id === "solar-system"
-    ? "photo-1614730321146-b6fa6a46bcb4"
-    : topic.id === "planet-saturn"
-      ? "photo-1614730321146-b6fa6a46bcb4"
-    : topic.id === "small-bodies"
-      ? "photo-1419242902214-272b3f66ee7a"
-    : topic.id === "planet-mercury"
-      ? "photo-1534796636912-3b95b3ab5986"
-    : topic.id === "planet-climates" || topic.id === "earth" || topic.id === "planet-earth"
-      ? "photo-1446776811953-b23d57bd21aa"
-      : (topic.image || "photo-1462331940025-496dfbfc7564");
+  // All immediate fallbacks are astronomical scenes or a planet photographed from space.
+  const spaceImageIds = {
+    "solar-system": "photo-1614730321146-b6fa6a46bcb4",
+    "small-bodies": "photo-1419242902214-272b3f66ee7a",
+    "planet-mercury": "photo-1534796636912-3b95b3ab5986",
+    "planet-venus": "photo-1462331940025-496dfbfc7564",
+    "planet-earth": "photo-1446776811953-b23d57bd21aa",
+    "earth": "photo-1446776811953-b23d57bd21aa",
+    "planet-climates": "photo-1462331940025-496dfbfc7564",
+    "cosmic-background": "photo-1419242902214-272b3f66ee7a"
+  };
+  const imageId = spaceImageIds[topic.id] || "photo-1462331940025-496dfbfc7564";
   return "https://images.unsplash.com/" + imageId + "?auto=format&fit=crop&w=900&q=80";
 }
 
