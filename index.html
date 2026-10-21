@@ -724,11 +724,23 @@ async function findNasaImage(topic, excluded = usedTopicImages) {
   return null;
 }
 function isCernImage(url) { return /cern\.ch/i.test(url || ""); }
+const cernTopicImages = {
+  particles: "https://cds.cern.ch/record/2858655/files/ATLAS_VP1_StableBeams2400bunches_run451896_evt349429897_2023-05-11T11-46-34.png",
+  quantum: "https://cds.cern.ch/record/2931344/files/ATLAS_VP1_First13p6TeVSBCollisions2025_run496908_evt13885876_2025-05-05T14-14-56.png",
+  nuclear: "https://cds.cern.ch/record/2894733/files/ATLAS_SB_run472553_evt29247654_2024-04-05T19-16-36_v4.png",
+  electromagnetism: "https://cds.cern.ch/record/2865016/files/ATLAS-PHOTO-2023-046-1.png",
+  mechanics: "https://cds.cern.ch/record/2956314/files/ATLAS-PHOTO-2026-011-1.png"
+};
 async function loadTopicImages() {
   if (topicImagesStarted) return;
   topicImagesStarted = true;
   for (const topic of topics) {
-    const candidate = await findNasaImage(topic, usedTopicImages);
+    let candidate = null;
+    const cernUrl = cernTopicImages[topic.id];
+    if (cernUrl && !usedTopicImages.has(cernUrl) && await checkImageUrl(cernUrl)) {
+      candidate = {url: cernUrl, title: topic.en + " — CERN event display", metadata: "CERN particle physics detector event display"};
+    }
+    if (!candidate) candidate = await findNasaImage(topic, usedTopicImages);
     if (!candidate) continue;
     usedTopicImages.add(candidate.url);
     topicImageCache.set(topic.id, candidate.url);
